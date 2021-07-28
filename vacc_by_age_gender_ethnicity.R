@@ -78,7 +78,7 @@ ggplot(final_data %>% filter(Age != "10 to 19")) +
   scale_y_continuous(labels = scales::label_percent()) +
   scale_x_date(date_breaks = "6 weeks",
                date_labels = "%d %b") +
-  labs(x = NULL, y = "Share of people with one or more doses",
+  labs(x = NULL, y = "Share of people with one or more dose",
        title = "New Zealand COVID-19 vaccination uptake by age, gender, and ethnicity",
        subtitle = "Excludes unknown gender, ethnicity, age, and the MELAA level 1 ethnic group (no vaccination data)"
        ) +
