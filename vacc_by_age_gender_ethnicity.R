@@ -33,7 +33,10 @@ all <- list.files(path = "data/",
 get_data <- function(filename, doses = c(1,2)) {
   # vaccinations by various criteria
   cat("working on: ", filename, "\n")
-  vacc <- read_excel(filename, sheet="Ethnicity, Age, Gender by dose")
+  sheet_names <- c("Ethnicity, Age, Gender by dose", "DHBofResidence by ethnicity")
+  sheets <- excel_sheets(filename)
+  this_sheet <- first(sheet_names[sheet_names %in% sheets])
+  vacc <- read_excel(filename, sheet=this_sheet)
   date <- dmy(sub(".*_([0-9]+_[0-9]+_2021)(.*)xlsx", "\\1", filename))
   vacc_summary <- vacc %>% select(Ethnicity = `Ethnic group`,
                                   Age = `Ten year age group`,
@@ -42,14 +45,14 @@ get_data <- function(filename, doses = c(1,2)) {
     filter(Dose %in% doses) %>%
     group_by(Ethnicity, Age, Gender) %>%
     summarise(Doses=sum(Vacc)) %>%
+    mutate(Ethnicity = fct_collapse(Ethnicity,
+                                    `European or other` = c("European/Other", "European or other", "European / Other", "Other"),
+                                    Maori = c("Māori", "Maori"))) %>%
     filter(Gender != "Other / Unknown",
            Gender != "Unknown/Other",
            Ethnicity != 'Other') %>%
     ungroup() %>%
-    mutate(Date = date,
-           Ethnicity = fct_collapse(Ethnicity,
-                      `European or other` = c("European/Other", "European or other", "European / Other"),
-                      Maori = c("Māori", "Maori")))
+    mutate(Date = date)
   
   vacc_summary
 }
