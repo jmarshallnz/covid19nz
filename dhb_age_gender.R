@@ -32,7 +32,7 @@ popn_summary <- popn %>%
   ungroup()
 
 # latest spreadsheet
-vacc <- read_excel("data/covid_vaccinations_27_07_2021.xlsx", sheet = "DHBofResidence by ethnicity")
+vacc <- read_excel("data/covid_vaccinations_03_08_2021.xlsx", sheet = "DHBofResidence by ethnicity")
 
 vacc_dhbs <- vacc %>% select(DHB = `DHB of residence`,
                  Age = `Ten year age group`,
