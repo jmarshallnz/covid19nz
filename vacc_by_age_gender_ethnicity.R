@@ -72,7 +72,7 @@ ggplot(final_data %>% filter(Age != "10 to 19")) +
                date_labels = "%d %b") +
   labs(x = NULL, y = "Share of people with one or more dose",
        title = "New Zealand COVID-19 vaccination uptake by age, gender, and ethnicity",
-       subtitle = "Excludes unknown gender, ethnicity, age, and the MELAA level 1 ethnic group (no vaccination data)"
+       subtitle = "Excludes unknown gender, ethnicity and age"
        ) +
   scale_colour_manual(values = get_pal("Hoiho"))
 dev.off()
