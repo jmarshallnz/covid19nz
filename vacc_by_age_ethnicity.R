@@ -21,7 +21,7 @@ popn_summary <- popn %>% select(Ethnicity, Age, Population = PopulationPR) %>%
   ungroup()
 
 # latest spreadsheet
-vacc <- read_excel("data/covid_vaccinations_27_07_2021.xlsx", sheet = "DHBofResidence by ethnicity")
+vacc <- read_excel("data/covid_vaccinations_03_08_2021.xlsx", sheet = "DHBofResidence by ethnicity")
 
 vacc_eth_age <- vacc %>% select(Age = `Ten year age group`,
                              Ethnicity = `Ethnic group`, Dose = `Dose number`,
@@ -90,7 +90,7 @@ plot_fun <- function(data) {
     scale_alpha_manual(values = c(0.6,1))
 }
 
-g1 = plot_fun(final_data %>% filter(Age != "All ages"))
+g1 = plot_fun(final_data %>% filter(Age == "All ages"))
 g2 = plot_fun(final_data %>% filter(Age != "All ages"))
 
 png("vacc_by_ethnicity.png", width=1920, height=1080)
