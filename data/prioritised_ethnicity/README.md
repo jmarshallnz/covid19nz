@@ -50,7 +50,3 @@ stay in that ethnic group after prioritisation the same way as they do in 2013, 
 10. Use the proportion male and female to break the counts by age and prioritised ethnicity into age, prioritised ethnicity and sex.
 
 11. Check that the prioritised counts are less than the total counts. They were, except for 90+ Europeans (likely as I didn't extend the age distributions enough), which we're not using here anyway.
-
-
-
-8. 
