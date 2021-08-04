@@ -6,24 +6,16 @@ library(Manu)
 library(patchwork)
 
 
-# baselines
-popn <- read_csv("data/National ethnic population projections, by age and sex, 2018(base)-2043/TABLECODE7994_Data_babcb185-dbde-40f7-b40e-bb32a6c04373.csv")
-
-# highly inefficient code to munge data for match
-popn_summary <- popn %>% select(Ethnicity, Age, Population=Value) %>%
-  mutate(Ethnicity = case_when(Ethnicity == "European or Other (including New Zealander)" ~ "European or other",
-                               Ethnicity == "Pacific" ~ "Pacific Peoples",
-                               TRUE ~ Ethnicity)) %>%
-  mutate(Age = fct_collapse(Age,
-                          `10 to 19` = c("10-14 years", "15-19 years"),
-                          `20 to 29` = c("20-24 years", "25-29 years"),
-                          `30 to 39` = c("30-34 years", "35-39 years"),
-                          `40 to 49` = c("40-44 years", "45-49 years"),
-                          `50 to 59` = c("50-54 years", "55-59 years"),
-                          `60 to 69` = c("60-64 years", "65-69 years"),
-                          `70 to 79` = c("70-74 years", "75-79 years"),
-                          `80 to 89` = c("80-84 years", "85-89 years"),
-                          `90+/Unknown` = c("90 years and over"))) %>%
+# baselines: Prioritised
+popn <- read_csv("data/prioritised_ethnicity/prioritised_ethnicity_population_2021.csv")
+popn_summary <- popn %>% select(Ethnicity, Age, Population = PopulationPR) %>%
+  mutate(Ethnicity = fct_collapse(Ethnicity,
+                                  "European or other" = c("European","MELAA"),
+                                  "Pacific Peoples" = "Pacific")) %>%
+  mutate(Age = (Age %/% 10) * 10,
+         Age = paste(Age, 'to', Age + 9),
+         Age = if_else(Age == "90 to 99",
+                       "90+/Unknown", Age)) %>%
   group_by(Ethnicity, Age) %>%
   summarise(Population = sum(Population)) %>%
   ungroup()
