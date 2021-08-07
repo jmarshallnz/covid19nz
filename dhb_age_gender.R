@@ -100,10 +100,13 @@ previous <- read_vacc_sheet("data/covid_vaccinations_27_07_2021.xlsx")
 plotting <- current %>%
   left_join(previous %>% rename(Prev = Vacc))
 
+#colours <- get_pal("Kotare")[c(6,2,1)]
+#colours <- get_pal("Hoiho")[c(1,2,4)]
+colours <- get_pal("Takahe")[c(5,3,1)]
 png("dhb_by_age.png", width=1980, height=1080)
 ggplot(plotting) +
-  geom_dhbtri(aes(map_id=DHB,class_id=tri_id, fill=Vacc, size = Vacc != Prev), alpha=0.7, colour='grey30') +
-  scale_fill_manual(values = get_pal("Hoiho")[c(1,2,4)])+
+  geom_dhbtri(aes(map_id=DHB,class_id=tri_id, fill=Vacc, size = Vacc != Prev, alpha = Vacc != Prev), colour='grey30') +
+  scale_fill_manual(values = colours)+
   geom_label_dhb(size=7) +
   facet_wrap(vars(Age), ncol=4) +
   labs(fill="Population with doses",
@@ -112,7 +115,8 @@ ggplot(plotting) +
   theme_void(base_size=36) +
   theme(legend.position='bottom',
         plot.subtitle=element_text(colour='grey30')) +
-  scale_size_manual(values = c(0,1), guide='none')
+  scale_size_manual(values = c(0,1), guide='none') +
+  scale_alpha_manual(values = c(0.6,0.9), guide='none')
 dev.off()
 
 
