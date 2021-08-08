@@ -4,19 +4,10 @@ library(janitor)
 library(readxl)
 library(Manu)
 
+source("helpers.R")
+
 # baselines: Prioritised ethnicity
-popn <- read_csv("data/prioritised_ethnicity/prioritised_ethnicity_population_2021.csv")
-popn_summary <- popn %>% select(Ethnicity, Gender=Sex, Age, Population = PopulationPR) %>%
-  mutate(Ethnicity = fct_collapse(Ethnicity,
-                                  "European or other" = c("European","MELAA"),
-                                  "Pacific Peoples" = "Pacific")) %>%
-  mutate(Age = (Age %/% 10) * 10,
-         Age = paste(Age, 'to', Age + 9),
-         Age = if_else(Age == "90 to 99",
-                       "90+/Unknown", Age)) %>%
-  group_by(Ethnicity, Age, Gender) %>%
-  summarise(Population = sum(Population)) %>%
-  ungroup()
+popn_summary <- prioritised_ethnicity_population()
 
 # grab all the excel sheets
 all <- list.files(path = "data/",

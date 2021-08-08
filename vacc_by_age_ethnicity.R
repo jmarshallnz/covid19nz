@@ -5,23 +5,16 @@ library(readxl)
 library(Manu)
 library(patchwork)
 
+source("helpers.R")
 
 # baselines: Prioritised
-popn <- read_csv("data/prioritised_ethnicity/prioritised_ethnicity_population_2021.csv")
-popn_summary <- popn %>% select(Ethnicity, Age, Population = PopulationPR) %>%
-  mutate(Ethnicity = fct_collapse(Ethnicity,
-                                  "European or other" = c("European","MELAA"),
-                                  "Pacific Peoples" = "Pacific")) %>%
-  mutate(Age = (Age %/% 10) * 10,
-         Age = paste(Age, 'to', Age + 9),
-         Age = if_else(Age == "90 to 99",
-                       "90+/Unknown", Age)) %>%
+popn_summary <- prioritised_ethnicity_population() %>%
   group_by(Ethnicity, Age) %>%
   summarise(Population = sum(Population)) %>%
   ungroup()
 
 # latest spreadsheet
-vacc <- read_excel("data/covid_vaccinations_03_08_2021.xlsx", sheet = "DHBofResidence by ethnicity")
+vacc <- read_excel(get_latest_sheet(), sheet = "DHBofResidence by ethnicity")
 
 vacc_eth_age <- vacc %>% select(Age = `Ten year age group`,
                              Ethnicity = `Ethnic group`, Dose = `Dose number`,
