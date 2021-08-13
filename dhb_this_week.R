@@ -5,7 +5,9 @@ library(Manu)
 
 source("helpers.R")
 
-popn_summary <- dhb_population()
+popn_summary <- prioritised_ethnicity_by_dhb() %>%
+  group_by(DHB, Age) %>%
+  summarise(Population = sum(Population))
 
 # latest spreadsheet
 read_vacc_sheet <- function(file) {

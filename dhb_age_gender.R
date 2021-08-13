@@ -6,7 +6,9 @@ library(Manu)
 # remotes::install_github('jmarshallnz/DHBins', ref="covid_dhbs")
 library(DHBins) 
 
-popn_summary <- dhb_population()
+popn_summary <- prioritised_ethnicity_by_dhb() %>%
+  group_by(DHB, Age) %>%
+  summarise(Population = sum(Population))
 
 # latest spreadsheet
 read_vacc_sheet <- function(file) {
