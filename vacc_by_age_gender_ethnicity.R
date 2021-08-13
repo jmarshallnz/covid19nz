@@ -7,7 +7,9 @@ library(Manu)
 source("helpers.R")
 
 # baselines: Prioritised ethnicity
-popn_summary <- prioritised_ethnicity_population()
+popn_summary <- prioritised_ethnicity_by_dhb() %>%
+  group_by(Ethnicity, Age, Gender) %>%
+  summarise(Pop2 = sum(Population))
 
 # grab all the excel sheets
 all <- list.files(path = "data/",
