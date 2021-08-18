@@ -2,6 +2,17 @@ library(tidyverse)
 library(lubridate)
 library(readxl)
 
+# helper function to grab the date of latest spreadsheet file from data/ folder
+get_latest_date <- function() {
+  vacc_data <- data.frame(file = list.files(path = "data",
+                                            pattern = ".xlsx", full.names=TRUE))
+  vacc_data %>%
+    mutate(week = dmy(sub(".*_([0-9]+_[0-9]+_2021)(.*)xlsx", "\\1", file))) %>%
+    arrange(desc(week)) %>%
+    slice(1) %>%
+    pull(week)
+}
+
 # helper function to grab the latest spreadsheet file from the data/ folder
 get_latest_sheet <- function(weeks_ago = 0) {
   vacc_data <- data.frame(file = list.files(path = "data",

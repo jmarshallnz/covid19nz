@@ -37,6 +37,7 @@ read_vacc_sheet <- function(file) {
   vacc_dhbs
 }
 
+curr_date <- get_latest_date()
 current <- read_vacc_sheet(get_latest_sheet())
 previous <- read_vacc_sheet(get_latest_sheet(weeks_ago = 1))
 
@@ -59,7 +60,7 @@ ggplot(this_week) +
   guides(fill = guide_legend(reverse = TRUE)) +
   scale_fill_manual(values = colours) +
   labs(x = NULL, y = "Doses per 100 people in each age group", fill = NULL,
-       title = "COVID-19 vaccinations by District Health Boards last week",
+       title=paste("COVID-19 vaccination District Health Boards in the week ending", format(curr_date, "%d %B %Y")),
        subtitle = "The age groups being vaccinated differ by DHB") +
   theme_minimal(base_size=36) +
   theme(legend.position = 'bottom')

@@ -6,6 +6,8 @@ library(Manu)
 # remotes::install_github('jmarshallnz/DHBins', ref="covid_dhbs")
 library(DHBins) 
 
+source('helpers.R')
+
 popn_summary <- prioritised_ethnicity_by_dhb() %>%
   group_by(DHB, Age) %>%
   summarise(Population = sum(Population))
@@ -72,6 +74,7 @@ read_vacc_sheet <- function(file) {
   return(tris_long)
 }
 
+curr_date <- get_latest_date()
 current <- read_vacc_sheet(get_latest_sheet())
 previous <- read_vacc_sheet(get_latest_sheet(weeks_ago = 1))
 
@@ -89,7 +92,7 @@ ggplot(plotting) +
   geom_label_dhb(size=7) +
   facet_wrap(vars(Age), ncol=4) +
   labs(fill="Population with doses",
-       title="COVID-19 Vaccination rates by Age group and District Health Board",
+       title=paste("COVID-19 Vaccination rates by Age group and District Health Board at", format(curr_date, "%d %B %Y")),
        subtitle="Highlighted wedges are progress from last week\n") +
   theme_void(base_size=36) +
   theme(legend.position='bottom',
