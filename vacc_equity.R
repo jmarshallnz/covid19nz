@@ -40,7 +40,7 @@ get_data <- function(filename, doses = c(1,2)) {
   vacc_summary
 }
 
-vacc_summary <- all %>% map(get_data, doses = 1) %>% bind_rows()
+vacc_summary <- all %>% map(get_data, doses=c(1,2)) %>% bind_rows()
 
 final_data <- vacc_summary %>% left_join(popn_summary) %>%
   filter(Ethnicity != "Unknown", Age != "90+/Unknown",
@@ -77,10 +77,10 @@ ggplot(final_data) +
   facet_wrap(vars(Age), ncol=4) +
   theme_minimal(base_size = 32) +
   theme(legend.position = "bottom") +
-  scale_y_log10(breaks=c(1), labels=c("Equal")) +
+  scale_y_log10(labels=scales::label_percent()) +
   scale_x_date(date_breaks = "6 weeks",
                date_labels = "%d %b") +
-  labs(x = NULL, y = "Vaccine rate ratio (first dose)",
+  labs(x = NULL, y = "Vaccine rate ratio",
        title = paste("New Zealand COVID-19 vaccination equity to", format(curr_date, "%d %B %Y")),
        subtitle = "The horizontal line is equity. Above the line is more doses compared to the non-Māori, non-Pacific population, below is fewer."
        ) +
