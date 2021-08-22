@@ -55,7 +55,7 @@ final_data %>% count(Ethnicity)
 curr_date <- get_latest_date()
 
 png("vacc_by_popn_through_time.png", width=1920, height=1080)
-ggplot(final_data %>% filter(Age != "10 to 19")) +
+ggplot(final_data) +
   geom_line(aes(x=Date, y=Doses/Population, group=Ethnicity), col = 'black', size=2.4) +
   geom_line(aes(x=Date, y=Doses/Population, col=Ethnicity), size=2) +
   facet_grid(vars(Gender), vars(Age)) +
