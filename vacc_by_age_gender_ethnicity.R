@@ -33,8 +33,7 @@ get_data <- function(filename, doses = c(1,2)) {
                                     `European or other` = c("European/Other", "European or other", "European / Other", "Other"),
                                     Maori = c("Māori", "Maori"))) %>%
     filter(Gender != "Other / Unknown",
-           Gender != "Unknown/Other",
-           Ethnicity != 'Other') %>%
+           Gender != "Unknown/Other") %>%
     ungroup() %>%
     mutate(Date = date)
   
