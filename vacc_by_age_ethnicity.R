@@ -1,6 +1,5 @@
 library(tidyverse)
 library(lubridate)
-library(janitor)
 library(readxl)
 library(Manu)
 library(patchwork)
