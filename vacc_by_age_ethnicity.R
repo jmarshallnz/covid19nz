@@ -13,6 +13,7 @@ popn_summary <- prioritised_ethnicity_by_dhb() %>%
   ungroup()
 
 # latest spreadsheet
+curr_date <- get_latest_date()
 vacc <- read_excel(get_latest_sheet(), sheet = "DHBofResidence by ethnicity")
 
 vacc_eth_age <- vacc %>% select(Age = `Ten year age group`,
@@ -87,8 +88,8 @@ g2 = plot_fun(final_data %>% filter(Age != "All ages"))
 
 png("vacc_by_ethnicity.png", width=1920, height=1080)
 g1 + g2 + plot_layout(guides = 'collect') +
-  plot_annotation(title = "New Zealand COVID-19 vaccination uptake by ethnicity: Age is important",
-                  subtitle = "Excludes unknown ethnicity, age, and the MELAA level 1 ethnic group (no vaccination data)") &
+  plot_annotation(title = paste("New Zealand COVID-19 vaccination uptake by ethnicity at", format(curr_date, "%d %B %Y")),
+                  subtitle = "Excludes unknown ethnicity or age") &
   theme_minimal(base_size=32) +
   theme(legend.position = 'bottom',
         strip.text = element_text(size=rel(1.1)))

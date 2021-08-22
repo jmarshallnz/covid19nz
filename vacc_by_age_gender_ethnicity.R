@@ -52,6 +52,8 @@ final_data %>% count(Date)
 final_data %>% count(Age)
 final_data %>% count(Ethnicity)
 
+curr_date <- get_latest_date()
+
 png("vacc_by_popn_through_time.png", width=1920, height=1080)
 ggplot(final_data %>% filter(Age != "10 to 19")) +
   geom_line(aes(x=Date, y=Doses/Population, group=Ethnicity), col = 'black', size=2.4) +
@@ -63,7 +65,7 @@ ggplot(final_data %>% filter(Age != "10 to 19")) +
   scale_x_date(date_breaks = "6 weeks",
                date_labels = "%d %b") +
   labs(x = NULL, y = "Share of people with one or more dose",
-       title = "New Zealand COVID-19 vaccination uptake by age, gender, and ethnicity",
+       title = paste("New Zealand COVID-19 vaccination uptake by age, gender, and ethnicity at", format(curr_date, "%d %B %Y")),
        subtitle = "Excludes unknown gender, ethnicity and age"
        ) +
   scale_colour_manual(values = get_pal("Hoiho"))
