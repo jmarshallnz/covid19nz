@@ -46,15 +46,15 @@ read_vacc_sheet <- function(file) {
     group_by(DHB, Age, Dose) %>%
     summarise(Vacc = sum(Vacc), Population=sum(Population)) %>%
     pivot_wider(names_from=Dose, values_from=Vacc, names_prefix="Dose") %>%
-    mutate(Unvaccinated = Population - Dose1,
-           `One dose` = Dose1 - Dose2,
-           `Fully vaccinated` = Dose2) %>%
-    select(DHB, Age, Unvaccinated:`Fully vaccinated`) %>%
+    mutate(Vulnerable = Population - Dose1,
+           `Partially protected` = Dose1 - Dose2,
+           Protected = Dose2) %>%
+    select(DHB, Age, Vulnerable:Protected) %>%
     ungroup() %>%
     unite(DHBAge, DHB, Age) -> vacc_counts
 
   # check counts
-  vacc_counts %>% summarise(across(Unvaccinated:`Fully vaccinated`, sum)) %>%
+  vacc_counts %>% summarise(across(Vulnerable:Protected, sum)) %>%
     print()
 
   # Setup triangles
@@ -69,7 +69,7 @@ read_vacc_sheet <- function(file) {
     separate(DHB, into=c("DHB", "Age"), sep="_") %>%
     mutate(DHB = fct_recode(DHB,
                             "Wellington" = "Capital & Coast and Hutt Valley")) %>%
-    mutate(Vacc = fct_relevel(Vacc, "Unvaccinated", "One dose"))
+    mutate(Vacc = fct_relevel(Vacc, "Vulnerable", "Partially protected"))
 
   return(tris_long)
 }
@@ -91,7 +91,7 @@ ggplot(plotting) +
   scale_fill_manual(values = colours)+
   geom_label_dhb(size=7) +
   facet_wrap(vars(Age), ncol=4) +
-  labs(fill="Population with doses",
+  labs(fill=NULL,
        title=paste("COVID-19 Vaccination rates by Age group and District Health Board at", format(curr_date, "%d %B %Y")),
        subtitle="Highlighted wedges are progress from last week\n") +
   theme_void(base_size=36) +
