@@ -84,7 +84,7 @@ plotting <- current %>%
 
 #colours <- get_pal("Kotare")[c(6,2,1)]
 #colours <- get_pal("Hoiho")[c(1,2,4)]
-colours <- get_pal("Takahe")[c(5,3,1)]
+colours <- get_pal("Takahe")[c(1,5,3)]
 png("dhb_by_age.png", width=1980, height=1080)
 ggplot(plotting) +
   geom_dhbtri(aes(map_id=DHB,class_id=tri_id, fill=Vacc, size = Vacc != Prev, alpha = Vacc != Prev), colour='grey30') +
