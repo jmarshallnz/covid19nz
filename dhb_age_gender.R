@@ -81,29 +81,22 @@ read_vacc_sheet <- function(file) {
 
 curr_date <- get_latest_date()
 current <- read_vacc_sheet(get_latest_sheet())
-previous <- read_vacc_sheet(get_latest_sheet(weeks_ago = 1))
-
-# highlight the differences
-plotting <- current %>%
-  left_join(previous %>% rename(Prev = Vacc))
 
 #colours <- get_pal("Kotare")[c(6,2,1)]
 #colours <- get_pal("Hoiho")[c(1,2,4)]
-colours <- get_pal("Takahe")[c(1,5,3)]
+colours <- get_pal("Takahe")[c(1,4,3)]
+colours[2] <- "#7cacbf"
+#colours <- c("#e36879", "#7cacbf", "#1F6683")
 png("dhb_by_age.png", width=1980, height=1080)
-ggplot(plotting) +
-  geom_dhbtri(aes(map_id=DHB,class_id=tri_id, fill=Vacc, size = Vacc != Prev, alpha = Vacc != Prev), colour='grey30') +
+ggplot(current) +
+  geom_dhbtri(aes(map_id=DHB,class_id=tri_id, fill=Vacc), alpha=0.8) +
   scale_fill_manual(values = colours)+
   geom_label_dhb(size=7) +
   facet_wrap(vars(Age), ncol=4) +
   labs(fill=NULL,
-       title=paste("COVID-19 Vaccination rates by Age group and District Health Board at", format(curr_date, "%d %B %Y")),
-       subtitle="Highlighted wedges are progress from last week\n") +
+       title=paste("COVID-19 Vaccination rates by Age group and District Health Board at", format(curr_date, "%d %B %Y"),"\n")) +
   theme_void(base_size=36) +
-  theme(legend.position='bottom',
-        plot.subtitle=element_text(colour='grey30')) +
-  scale_size_manual(values = c(0,1), guide='none') +
-  scale_alpha_manual(values = c(0.6,0.9), guide='none')
+  theme(legend.position='bottom')
 dev.off()
 
 
