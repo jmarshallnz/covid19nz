@@ -4,7 +4,8 @@ library(readxl)
 library(Manu)
 # JM hacked version of DHBins: https://github.com/jmarshallnz/DHBins/tree/covid_dhbs
 # remotes::install_github('jmarshallnz/DHBins', ref="covid_dhbs")
-library(DHBins) 
+library(DHBins)
+library(gganimate)
 
 source('helpers.R')
 
@@ -99,4 +100,35 @@ ggplot(current) +
   theme(legend.position='bottom')
 dev.off()
 
+# Now do the same, but animate it...
 
+# grab all the excel sheets
+all <- list.files(path = "data",
+                  pattern = ".xlsx", full.names=TRUE)
+test <- map_dfr(all, read_vacc_sheet) 
+
+# animate across the dates
+final <- test %>% mutate(DHB = fct_recode(DHB,
+                                         Auckland = "Auckland Metro",
+                                         Midcentral = "MidCentral",
+                                         `Hawke's Bay` = "Hawkes Bay"))
+
+triangles <- DHBins:::dhmap_tri()
+plotting <- triangles %>% separate(id, into=c("DHB", "tri_id"), sep = "_", remove = FALSE, convert=TRUE) %>%
+  left_join(final) %>% arrange(Date) %>%
+  mutate(Date = as_factor(format(Date, "%d %B %Y")))
+
+g <- ggplot(plotting) +
+  geom_polygon(aes(x=x, y=y, group=id, fill=Vacc), alpha=0.8) +
+  geom_text(data=DHBins:::dhbs, aes(x=x, y=y, label=printname)) +
+  facet_wrap(vars(Age), ncol=4) +
+  scale_fill_manual(values = colours)+
+  coord_fixed() +
+  theme_void(base_size=24) +
+  labs(fill=NULL,
+       title=labs(title = 'COVID-19 Vaccination rates by Age group and District Health Board at {current_frame}\n\n')) +
+  theme(legend.position='bottom') +
+  transition_manual(Date)
+
+animate(g, renderer = gifski_renderer(file="dhb_progress.gif", loop=TRUE),
+        width = 1280, height = 720, units = "px", duration=9, fps=1, end_pause=5)
