@@ -16,6 +16,10 @@ popn_summary <- prioritised_ethnicity_by_dhb() %>%
 read_vacc_sheet <- function(file) {
   vacc <- read_excel(file, sheet = "DHBofResidence by ethnicity")
 
+  if (!("Ten year age group" %in% names(vacc))) {
+    return(NULL)
+  }
+
   vacc_dhbs <- vacc %>% select(DHB = `DHB of residence`,
                                Age = `Ten year age group`,
                                Gender, Dose = `Dose number`,
@@ -69,7 +73,8 @@ read_vacc_sheet <- function(file) {
     separate(DHB, into=c("DHB", "Age"), sep="_") %>%
     mutate(DHB = fct_recode(DHB,
                             "Wellington" = "Capital & Coast and Hutt Valley")) %>%
-    mutate(Vacc = fct_relevel(Vacc, "Vulnerable", "Partially protected"))
+    mutate(Vacc = fct_relevel(Vacc, "Vulnerable", "Partially protected")) %>%
+    mutate(Date = dmy(sub(".*_([0-9]+_[0-9]+_2021)(.*)xlsx", "\\1", file)))
 
   return(tris_long)
 }
