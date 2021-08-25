@@ -41,10 +41,11 @@ ethnicity_data <- vacc_eth_age %>%
   mutate(Ethnicity = fct_recode(Ethnicity, Māori = "Maori")) %>%
   ungroup() %>%
   pivot_wider(names_from=Dose, values_from=Vacc, names_prefix="Dose") %>%
-  mutate(`One dose` = Dose1 - Dose2,
-         `Fully vaccinated` = Dose2) %>%
-  select(Ethnicity, Age, Population, `One dose`:`Fully vaccinated`) %>%
-  pivot_longer(`One dose`:`Fully vaccinated`,names_to = "Vacc", values_to = "Count")
+  mutate(Unprotected = Population - Dose1,
+         `Partially protected` = Dose1 - Dose2,
+         Protected = Dose2) %>%
+  select(Ethnicity, Age, Population, Unprotected:Protected) %>%
+  pivot_longer(Unprotected:Protected,names_to = "Vacc", values_to = "Count")
 
 total_data <- ethnicity_data %>%
   group_by(Ethnicity, Vacc) %>%
@@ -53,7 +54,7 @@ total_data <- ethnicity_data %>%
 
 final_data <- bind_rows(ethnicity_data, total_data) %>%
   mutate(Rate = Count/Population,
-         Vacc = fct_relevel(Vacc, "One dose"),
+         Vacc = fct_relevel(Vacc, "Unprotected", "Partially Protected"),
          Ethnicity = fct_relevel(Ethnicity,
                                  "Māori",
                                  "Pacific Peoples",
@@ -80,7 +81,7 @@ plot_fun <- function(data) {
     guides(alpha = guide_legend(reverse = TRUE),
            fill = "none") +
     scale_fill_manual(values = cols) +
-    scale_alpha_manual(values = c(0.6,1))
+    scale_alpha_manual(values = c(1,0.6,0.3))
 }
 
 g1 = plot_fun(final_data %>% filter(Age == "All ages"))
@@ -88,9 +89,10 @@ g2 = plot_fun(final_data %>% filter(Age != "All ages"))
 
 png("vacc_by_ethnicity.png", width=1920, height=1080)
 g1 + g2 + plot_layout(guides = 'collect') +
-  plot_annotation(title = paste("New Zealand COVID-19 vaccination uptake by ethnicity at", format(curr_date, "%d %B %Y")),
+  plot_annotation(title = paste("New Zealand COVID-19 vaccinated population by ethnicity at", format(curr_date, "%d %B %Y")),
                   subtitle = "Excludes unknown ethnicity or age") &
   theme_minimal(base_size=32) +
   theme(legend.position = 'bottom',
-        strip.text = element_text(size=rel(1.1)))
+        strip.text = element_text(size=rel(1.1)),
+        panel.spacing.x = unit(50, "pt"))
 dev.off()
