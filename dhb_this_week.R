@@ -41,7 +41,8 @@ curr_date <- get_latest_date()
 current <- read_vacc_sheet(get_latest_sheet())
 previous <- read_vacc_sheet(get_latest_sheet(weeks_ago = 1))
 
-colours <- get_pal("Takahe")[c(1,3)]
+colours <- get_pal("Takahe")[c(3,1)]
+colours[2] <- "#7cacbf"
 
 this_week <- current %>% left_join(previous %>% rename(Prev = Vacc)) %>%
   mutate(Vacc = Vacc - Prev) %>%
