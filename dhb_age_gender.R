@@ -51,15 +51,15 @@ read_vacc_sheet <- function(file) {
     group_by(DHB, Age, Dose) %>%
     summarise(Vacc = sum(Vacc), Population=sum(Population)) %>%
     pivot_wider(names_from=Dose, values_from=Vacc, names_prefix="Dose") %>%
-    mutate(Vulnerable = Population - Dose1,
+    mutate(Unprotected = Population - Dose1,
            `Partially protected` = Dose1 - Dose2,
            Protected = Dose2) %>%
-    select(DHB, Age, Vulnerable:Protected) %>%
+    select(DHB, Age, Unprotected:Protected) %>%
     ungroup() %>%
     unite(DHBAge, DHB, Age) -> vacc_counts
 
   # check counts
-  vacc_counts %>% summarise(across(Vulnerable:Protected, sum)) %>%
+  vacc_counts %>% summarise(across(Unprotected:Protected, sum)) %>%
     print()
 
   # Setup triangles
@@ -74,7 +74,7 @@ read_vacc_sheet <- function(file) {
     separate(DHB, into=c("DHB", "Age"), sep="_") %>%
     mutate(DHB = fct_recode(DHB,
                             "Wellington" = "Capital & Coast and Hutt Valley")) %>%
-    mutate(Vacc = fct_relevel(Vacc, "Vulnerable", "Partially protected")) %>%
+    mutate(Vacc = fct_relevel(Vacc, "Unprotected", "Partially protected")) %>%
     mutate(Date = dmy(sub(".*_([0-9]+_[0-9]+_2021)(.*)xlsx", "\\1", file)))
 
   return(tris_long)
