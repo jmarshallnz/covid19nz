@@ -131,4 +131,4 @@ g <- ggplot(plotting) +
   transition_manual(Date)
 
 animate(g, renderer = gifski_renderer(file="dhb_progress.gif", loop=TRUE),
-        width = 1280, height = 720, units = "px", duration=9, fps=1, end_pause=5)
+        width = 1280, height = 720, units = "px", duration=5 + length(unique(plotting$Date)), fps=1, end_pause=5)
