@@ -45,3 +45,52 @@ prioritised_ethnicity_by_dhb <- function() {
   
   popn_summary
 }
+
+hsu_ethnicity_by_dhb <- function(file) {
+  # baselines: HSU ethnicity from MoH by DHB
+  popn <- read_excel(file, sheet="HSU Population") %>%
+    select(Age = `Age group`, Ethnicity = `Ethnic group`,
+           Gender, DHB = `DHB of residence`, Population)
+  # redo to the age groups we likely want.
+  popn_summary <- popn %>%
+    filter(Age != "Various",
+           Gender != "Unknown/Other",
+           DHB != "Overseas / Unknown") %>%
+    mutate(Age = fct_recode(Age, `10 to 14` = "12 to 14"),
+           Ethnicity = fct_collapse(Ethnicity, `European or other` = c("Unknown", "European or Other")))
+
+  popn_5_years <- popn_summary %>% filter(str_detect(Age, "to"))
+  popn_65_plus <- popn_summary %>% filter(Age == "65 and over") %>%
+    select(-Age)
+
+  # assume that the proportional splits in 65 plus are the same as prioritised ethnicity
+  # age splits (this is not true, but will be OK for what we want)
+  prioritised <- read_excel("data/dhb_projections/2020-21 Population Projections.xlsx", sheet=1, skip=1) %>%
+    select(DHB = DHB_name, Ethnicity, Gender=Sex, Age = Age_Group, Population = pop2020_2021) %>%
+    extract(Age, into="Age", regex="([[:digit:]]+)", convert=TRUE) %>%
+    mutate(DHB = fct_collapse(DHB,
+                              "Auckland Metro" = c("Auckland", "Waitemata", "Counties Manukau"),
+                              "Capital & Coast and Hutt Valley" = c("Capital and Coast", "Hutt"))) %>%
+    mutate(Ethnicity = fct_recode(Ethnicity,
+                                    "European or other" = "Other",
+                                    "Pacific Peoples" = "Pacific")) %>%
+    filter(Age >= 65) %>%
+    group_by(DHB, Ethnicity, Gender) %>%
+    mutate(Prop = Population/sum(Population), .keep='unused')
+  
+  popn_65_div <- popn_65_plus %>% left_join(prioritised) %>%
+    mutate(Population = round(Population * Prop), .keep='unused')
+  
+  final_popn <- popn_5_years %>% extract(Age, into="Age", regex="([[:digit:]]+) ", convert=TRUE) %>%
+    bind_rows(popn_65_div) %>%
+    mutate(Age = (Age %/% 10) * 10,
+           Age = paste(Age, 'to', Age + 9),
+           Age = if_else(Age == "90 to 99",
+                "90+/Unknown", Age)) %>%
+    group_by(DHB, Ethnicity, Age, Gender) %>%
+    summarise(Population = sum(Population)) %>%
+    ungroup()
+  
+  final_popn
+}
+

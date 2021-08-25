@@ -7,7 +7,7 @@ library(patchwork)
 source("helpers.R")
 
 # baselines: Prioritised
-popn_summary <- prioritised_ethnicity_by_dhb() %>%
+popn_summary <- hsu_ethnicity_by_dhb(get_latest_sheet()) %>%
   group_by(Ethnicity, Age) %>%
   summarise(Population = sum(Population)) %>%
   ungroup()
