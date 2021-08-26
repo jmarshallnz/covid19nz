@@ -6,7 +6,7 @@ library(Manu)
 source("helpers.R")
 
 # baselines: Prioritised ethnicity
-popn_summary <- prioritised_ethnicity_by_dhb() %>%
+popn_summary <- hsu_ethnicity_by_dhb(get_latest_sheet(), by_gender=TRUE) %>%
   group_by(Ethnicity, Age, Gender) %>%
   summarise(Population = sum(Population))
 
