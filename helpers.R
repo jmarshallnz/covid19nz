@@ -46,7 +46,7 @@ prioritised_ethnicity_by_dhb <- function() {
   popn_summary
 }
 
-hsu_ethnicity_by_dhb <- function(file) {
+hsu_ethnicity_by_dhb <- function(file, by_gender = TRUE) {
   # baselines: HSU ethnicity from MoH by DHB
   popn <- read_excel(file, sheet="HSU Population") %>%
     select(Age = `Age group`, Ethnicity = `Ethnic group`,
@@ -54,10 +54,18 @@ hsu_ethnicity_by_dhb <- function(file) {
   # redo to the age groups we likely want.
   popn_summary <- popn %>%
     filter(Age != "Various",
-           Gender != "Unknown/Other",
            DHB != "Overseas / Unknown") %>%
     mutate(Age = fct_recode(Age, `10 to 14` = "12 to 14"),
            Ethnicity = fct_collapse(Ethnicity, `European or other` = c("Unknown", "European or Other")))
+
+  # filter out the unknown gender if that is being used, else combine
+  if (by_gender) {
+    popn_summary <- popn_summary %>% filter( Gender != "Unknown/Other")
+  } else {
+    popn_summary <- popn_summary %>%
+      group_by(Age, Ethnicity, DHB) %>%
+      summarise(Population = sum(Population)) %>% ungroup()
+  }
 
   popn_5_years <- popn_summary %>% filter(str_detect(Age, "to"))
   popn_65_plus <- popn_summary %>% filter(Age == "65 and over") %>%
@@ -74,23 +82,41 @@ hsu_ethnicity_by_dhb <- function(file) {
     mutate(Ethnicity = fct_recode(Ethnicity,
                                     "European or other" = "Other",
                                     "Pacific Peoples" = "Pacific")) %>%
-    filter(Age >= 65) %>%
-    group_by(DHB, Ethnicity, Gender) %>%
+    filter(Age >= 65)
+
+  # if we want gender, then it's straight forward
+  if (by_gender) {
+    prioritised <- prioritised %>%
+      group_by(DHB, Ethnicity, Gender)
+  } else { # otherwise, first summarise by gender
+    prioritised <- prioritised %>%
+      group_by(Ethnicity, DHB, Age) %>%
+      summarise(Population = sum(Population))
+  }
+  prioritised_done <- prioritised %>%
     mutate(Prop = Population/sum(Population), .keep='unused')
-  
-  popn_65_div <- popn_65_plus %>% left_join(prioritised) %>%
+
+  # Now join and compute proportions in 65+ categories
+  popn_65_div <- popn_65_plus %>% left_join(prioritised_done) %>%
     mutate(Population = round(Population * Prop), .keep='unused')
-  
-  final_popn <- popn_5_years %>% extract(Age, into="Age", regex="([[:digit:]]+) ", convert=TRUE) %>%
+
+  # And combine and convert ages
+  combined_popn <- popn_5_years %>% extract(Age, into="Age", regex="([[:digit:]]+) ", convert=TRUE) %>%
     bind_rows(popn_65_div) %>%
     mutate(Age = (Age %/% 10) * 10,
            Age = paste(Age, 'to', Age + 9),
            Age = if_else(Age == "90 to 99",
                 "90+/Unknown", Age)) %>%
-    group_by(DHB, Ethnicity, Age, Gender) %>%
+    group_by(DHB, Ethnicity, Age)
+
+  # add the gender group
+  if (by_gender) {
+    combined_popn <- combined_popn %>%
+      group_by(Gender, .add=TRUE)
+  }
+
+  combined_popn %>%
     summarise(Population = sum(Population)) %>%
     ungroup()
-  
-  final_popn
 }
 
