@@ -17,23 +17,23 @@ popn_summary <- prioritised_ethnicity_by_dhb() %>%
 read_vacc_sheet <- function(file) {
   vacc <- read_excel(file, sheet = "DHBofResidence by ethnicity")
 
-  if (!("Ten year age group" %in% names(vacc))) {
+  if (!("Age group" %in% names(vacc))) {
     return(NULL)
   }
 
   vacc_dhbs <- vacc %>% select(DHB = `DHB of residence`,
-                               Age = `Ten year age group`,
-                               Gender, Dose = `Dose number`,
-                               Vacc = `# doses administered`) %>%
-    filter(DHB != "Overseas / Unknown",
-           Age != "90+/Unknown",
-           Age != "90 + years / Unknown") %>%
+                               Age = `Age group`,
+                               Dose1 = `First dose administered`,
+                               Dose2 = `Second dose administered`,
+                               Population) %>%
+    filter(DHB != "Overseas / Unknown") %>%
+    mutate(Age = fct_collapse(Age,
+                              "12 to 29" = c("12-15", "16-19", "20-24", "25-29"),
+                              "30 to 49" = c("30-34", "35-39", "40-44", "45-49"),
+                              "50 to 64" = c("50-54", "55-59", "60-64"))) %>%
+    pivot_longer(Dose1:Dose2, names_to="Dose", values_to="Vacc", names_prefix="Dose") %>%
     group_by(DHB, Age, Dose) %>%
-    summarise(Vacc = sum(Vacc)) %>%
-    left_join(popn_summary) %>%
-    group_by(DHB, Age, Dose) %>%
-    summarise(Vacc = sum(Vacc),
-              Population = sum(Population))
+    summarise(Vacc = sum(Vacc), Population = sum(Population))
 
   # check counts:
   vacc_dhbs %>% group_by(Dose) %>%
@@ -43,13 +43,6 @@ read_vacc_sheet <- function(file) {
   # combine age groups further, and munge
   # into format ready for DHBins
   vacc_dhbs %>%
-    mutate(Age = fct_collapse(Age,
-                              "10 to 29" = c("10 to 19", "20 to 29"),
-                              "30 to 49" = c("30 to 39", "40 to 49"),
-                              "50 to 69" = c("50 to 59", "60 to 69"),
-                              "70 to 89" = c("70 to 79", "80 to 89"))) %>%
-    group_by(DHB, Age, Dose) %>%
-    summarise(Vacc = sum(Vacc), Population=sum(Population)) %>%
     pivot_wider(names_from=Dose, values_from=Vacc, names_prefix="Dose") %>%
     mutate(Unprotected = Population - Dose1,
            `Partially protected` = Dose1 - Dose2,
