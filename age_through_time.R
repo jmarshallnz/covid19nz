@@ -51,7 +51,8 @@ weekly_vacc <- all_dat %>% extract(Age, into="Age", regex="([[:digit:]]*)", conv
 cumm_vacc <- weekly_vacc %>% group_by(Age, Dose) %>%
   arrange(Week) %>%
   mutate(Vacc = cumsum(Vacc),
-         Dose = paste("Dose", Dose))
+         Dose = paste("Dose", Dose)) %>%
+  mutate(Week = as.Date(Week))
 
 png("vacc_by_age_through_time.png", width=1980, height=1080)
 ggplot(cumm_vacc) +
@@ -60,6 +61,7 @@ ggplot(cumm_vacc) +
   facet_wrap(vars(Dose)) +
   scale_color_viridis_d(direction = -1) +
   scale_y_continuous(limits = c(0,100), expand=c(0,0)) +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b") +
   guides(colour = guide_legend(nrow = 1)) +
   theme_minimal(base_size=36) +
   labs(x = NULL,
