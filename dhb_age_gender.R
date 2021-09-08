@@ -27,10 +27,12 @@ read_vacc_sheet <- function(file) {
                                Dose2 = `Second dose administered`,
                                Population) %>%
     filter(DHB != "Overseas / Unknown") %>%
+    filter(DHB != "Various") %>%
     mutate(Age = fct_collapse(Age,
                               "12 to 29" = c("12-15", "16-19", "20-24", "25-29"),
                               "30 to 49" = c("30-34", "35-39", "40-44", "45-49"),
-                              "50 to 64" = c("50-54", "55-59", "60-64"))) %>%
+                              "50 to 64" = c("50-54", "55-59", "60-64"),
+                              "65+" = c("65-69", "70-74", "75-79", "80-84", "85-89", "90+"))) %>%
     pivot_longer(Dose1:Dose2, names_to="Dose", values_to="Vacc", names_prefix="Dose") %>%
     group_by(DHB, Age, Dose) %>%
     summarise(Vacc = sum(Vacc), Population = sum(Population))
@@ -48,10 +50,16 @@ read_vacc_sheet <- function(file) {
            `Partially protected` = Dose1 - Dose2,
            Protected = Dose2) %>%
     select(DHB, Age, Unprotected:Protected) %>%
-    ungroup() %>%
-    unite(DHBAge, DHB, Age) -> vacc_counts
+    pivot_longer(Unprotected:Protected, names_to="Vacc", values_to="Count") %>%
+    ungroup()
+}
 
+to_triangles <- function(vacc_counts) {
   # check counts
+  vacc_counts <- vacc_counts %>%
+    pivot_wider(names_from=Vacc, values_from=Count) %>%
+    unite(DHBAge, DHB, Age)
+  
   vacc_counts %>% summarise(across(Unprotected:Protected, sum)) %>%
     print()
 
@@ -67,14 +75,14 @@ read_vacc_sheet <- function(file) {
     separate(DHB, into=c("DHB", "Age"), sep="_") %>%
     mutate(DHB = fct_recode(DHB,
                             "Wellington" = "Capital & Coast and Hutt Valley")) %>%
-    mutate(Vacc = fct_relevel(Vacc, "Unprotected", "Partially protected")) %>%
-    mutate(Date = dmy(sub(".*_([0-9]+_[0-9]+_2021)(.*)xlsx", "\\1", file)))
+    mutate(Vacc = fct_relevel(Vacc, "Unprotected", "Partially protected"))
 
   return(tris_long)
 }
 
 curr_date <- get_latest_date()
-current <- read_vacc_sheet(get_latest_sheet())
+current_counts <- read_vacc_sheet(get_latest_sheet())
+current <- to_triangles(current_counts)
 
 #colours <- get_pal("Kotare")[c(6,2,1)]
 #colours <- get_pal("Hoiho")[c(1,2,4)]
