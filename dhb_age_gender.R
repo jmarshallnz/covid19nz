@@ -84,6 +84,10 @@ curr_date <- get_latest_date()
 current_counts <- read_vacc_sheet(get_latest_sheet())
 current <- to_triangles(current_counts)
 
+current_counts %>% group_by(DHB, Age) %>%
+  mutate(Prop = Count/sum(Count)) %>%
+  filter(Vacc == "Unprotected") %>% arrange(Prop)
+
 #colours <- get_pal("Kotare")[c(6,2,1)]
 #colours <- get_pal("Hoiho")[c(1,2,4)]
 colours <- get_pal("Takahe")[c(1,4,3)]

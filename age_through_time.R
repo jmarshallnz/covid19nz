@@ -2,8 +2,8 @@ library(tidyverse)
 library(lubridate)
 library(readxl)
 
-vacc_dat <- read_excel("data/rate_ratio_and_vaccine_uptake_over_time_-_by_dhb_ethnicity_and_age.xlsx",
-                  sheet=2) %>%
+vacc_dat <- read_excel("data/210913_-_equity_-_rate_ratios_and_uptake_over_time.xlsx",
+                  sheet=4) %>%
   rename(Week = `Week ending date`,
          Dose = `Dose number`,
          Ethnicity = `Ethnic group`,
@@ -15,8 +15,8 @@ vacc_dat <- read_excel("data/rate_ratio_and_vaccine_uptake_over_time_-_by_dhb_et
   group_by(Week, Dose, Age) %>%
   summarise(Vacc = sum(Vacc))
 
-popn_dat <- read_excel("data/rate_ratio_and_vaccine_uptake_over_time_-_by_dhb_ethnicity_and_age.xlsx",
-                       sheet=3) %>%
+popn_dat <- read_excel("data/210913_-_equity_-_rate_ratios_and_uptake_over_time.xlsx",
+                       sheet=5) %>%
   rename(Ethnicity = `Ethnic group`,
          Age = `Age group`,
          DHB = `DHB of residence`,
@@ -38,12 +38,10 @@ all_dat %>% group_by(Week, Dose) %>% summarise(Total = sum(Population, na.rm=TRU
   pull(Total) %>% unique()
 
 # summarise up to our age and dhb categories (could change this whenever we like now...)
-age_cats <- data.frame(cuts=seq(0,80,by=10),
-                       labs=c("0 to 9", "10 to 19", "20 to 29", "30 to 39", "40 to 49",
-                              "50 to 59", "60 to 69", "70 to 79", "80+"))
-weekly_vacc <- all_dat %>% extract(Age, into="Age", regex="([[:digit:]]*)", convert=TRUE) %>%
-  mutate(Age = cut(Age, breaks=c(age_cats$cuts, Inf), labels=age_cats$labs, right=FALSE)) %>%
-  filter(Age != "0 to 9") %>%
+#age_cats <- data.frame(cuts=seq(0,80,by=10),
+#                       labs=c("0 to 9", "10 to 19", "20 to 29", "30 to 39", "40 to 49",
+#                              "50 to 59", "60 to 69", "70 to 79", "80+"))
+weekly_vacc <- all_dat %>% filter(Age != "< 12") %>%
   group_by(Week, Age, Dose) %>%
   summarise(Vacc = sum(Vacc), Population = sum(Population, na.rm=TRUE))
 

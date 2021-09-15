@@ -7,8 +7,8 @@ library(Manu)
 library(DHBins)
 library(gganimate)
 
-vacc_dat <- read_excel("data/rate_ratio_and_vaccine_uptake_over_time_-_by_dhb_ethnicity_and_age.xlsx",
-                       sheet=2) %>%
+vacc_dat <- read_excel("data/210913_-_equity_-_rate_ratios_and_uptake_over_time.xlsx",
+                       sheet=4) %>%
   rename(Week = `Week ending date`,
          Dose = `Dose number`,
          Ethnicity = `Ethnic group`,
@@ -19,8 +19,8 @@ vacc_dat <- read_excel("data/rate_ratio_and_vaccine_uptake_over_time_-_by_dhb_et
          DHB != "Unknown",
          Dose != 0)
 
-popn_dat <- read_excel("data/rate_ratio_and_vaccine_uptake_over_time_-_by_dhb_ethnicity_and_age.xlsx",
-                       sheet=3) %>%
+popn_dat <- read_excel("data/210913_-_equity_-_rate_ratios_and_uptake_over_time.xlsx",
+                       sheet=5) %>%
   rename(Ethnicity = `Ethnic group`,
          Age = `Age group`,
          DHB = `DHB of residence`,
@@ -35,21 +35,24 @@ all_dat <- vacc_dat %>% complete(Week, DHB, Age, Ethnicity, Dose, fill=list(Vacc
   left_join(popn_dat)
 
 plot_me <- all_dat %>% 
-  filter(Age %in% c("20 to 24", "25 to 29")) %>%
   group_by(Week, DHB) %>%
   summarise(Vacc = sum(Vacc), Population = sum(Population, na.rm=TRUE)) %>%
   ungroup() %>%
   mutate(Rate = Vacc/Population/7*2)
 
-highlight_increase <- plot_me %>%
-  filter(Week >= max(Week) - time_length("7 days")) %>%
-  group_by(DHB) %>%
-  select(DHB, Week, Rate) %>%
-  pivot_wider(names_from=Week, values_from=Rate) %>%
-  mutate(highlight = `2021-09-05` > `2021-08-29`, .keep='unused')
+this_week <- max(plot_me$Week)
+last_week <- this_week - time_length("7 days")
+this_week <- as.character(this_week)
+last_week <- as.character(last_week)
 
-png("dhb_vacc_rates_20_20.png", width=1280, height=720)
-ggplot(plot_me %>% left_join(highlight_increase)) +
+highlight_best <- plot_me %>%
+  filter(Week == this_week) %>%
+  slice_max(Rate, n=5) %>%
+  select(DHB) %>%
+  mutate(highlight = TRUE)
+
+png("dhb_vacc_rates.png", width=1280, height=720)
+ggplot(plot_me %>% left_join(highlight_best) %>% replace_na(list(highlight=FALSE))) +
   geom_line(aes(x=Week, y=Rate, size=highlight)) +
   facet_wrap(vars(DHB)) +
   theme_minimal(base_size=24) +
@@ -58,8 +61,8 @@ ggplot(plot_me %>% left_join(highlight_increase)) +
   guides(size='none') +
   labs(x = NULL,
        y = "Population dosed per day",
-       title = "DHB vaccination performance (20-29 year olds) over time",
-       subtitle = "Highlighted DHBs increased rates in week to 5 September.")
+       title = "DHB vaccination performance over time",
+       subtitle = "Highlighted DHBs are vaccinating fastest")
 dev.off()
 
 
