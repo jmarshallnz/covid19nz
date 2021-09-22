@@ -7,7 +7,7 @@ library(Manu)
 library(DHBins)
 library(gganimate)
 
-vacc_dat <- read_excel("data/210913_-_equity_-_rate_ratios_and_uptake_over_time.xlsx",
+vacc_dat <- read_excel("data/210920_-_rate_ratios_and_uptake_over_time.xlsx",
                        sheet=4) %>%
   rename(Week = `Week ending date`,
          Dose = `Dose number`,
@@ -19,7 +19,7 @@ vacc_dat <- read_excel("data/210913_-_equity_-_rate_ratios_and_uptake_over_time.
          DHB != "Unknown",
          Dose != 0)
 
-popn_dat <- read_excel("data/210913_-_equity_-_rate_ratios_and_uptake_over_time.xlsx",
+popn_dat <- read_excel("data/210920_-_rate_ratios_and_uptake_over_time.xlsx",
                        sheet=5) %>%
   rename(Ethnicity = `Ethnic group`,
          Age = `Age group`,
@@ -46,7 +46,7 @@ this_week <- as.character(this_week)
 last_week <- as.character(last_week)
 
 highlight_best <- plot_me %>%
-  filter(Week == this_week) %>%
+  filter(as.character(Week) == this_week) %>%
   slice_max(Rate, n=5) %>%
   select(DHB) %>%
   mutate(highlight = TRUE)

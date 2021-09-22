@@ -2,7 +2,7 @@ library(tidyverse)
 library(lubridate)
 library(readxl)
 
-vacc_dat <- read_excel("data/210913_-_equity_-_rate_ratios_and_uptake_over_time.xlsx",
+vacc_dat <- read_excel("data/210920_-_rate_ratios_and_uptake_over_time.xlsx",
                   sheet=4) %>%
   rename(Week = `Week ending date`,
          Dose = `Dose number`,
@@ -15,7 +15,7 @@ vacc_dat <- read_excel("data/210913_-_equity_-_rate_ratios_and_uptake_over_time.
   group_by(Week, Dose, Age) %>%
   summarise(Vacc = sum(Vacc))
 
-popn_dat <- read_excel("data/210913_-_equity_-_rate_ratios_and_uptake_over_time.xlsx",
+popn_dat <- read_excel("data/210920_-_rate_ratios_and_uptake_over_time.xlsx",
                        sheet=5) %>%
   rename(Ethnicity = `Ethnic group`,
          Age = `Age group`,
@@ -58,7 +58,7 @@ ggplot(cumm_vacc) +
   geom_line(aes(x=Week, y=Vacc/Population*100, col=Age), size=3) +
   facet_wrap(vars(Dose)) +
   scale_color_viridis_d(direction = -1) +
-  scale_y_continuous(limits = c(0,100), expand=c(0,0)) +
+  scale_y_continuous(limits = c(0,100), expand=c(0,0), breaks=seq(0,100,by=20)) +
   scale_x_date(date_breaks = "1 month", date_labels = "%b") +
   guides(colour = guide_legend(nrow = 1)) +
   theme_minimal(base_size=36) +
