@@ -7,7 +7,7 @@ library(Manu)
 library(DHBins)
 library(gganimate)
 
-vacc_dat <- read_excel("data/210920_-_rate_ratios_and_uptake_over_time.xlsx",
+vacc_dat <- read_excel("data/210727_-_covid-19_vacine_equity_-_rate_ratios_and_uptake_over_time.xlsx",
                        sheet=4) %>%
   rename(Week = `Week ending date`,
          Dose = `Dose number`,
@@ -19,7 +19,7 @@ vacc_dat <- read_excel("data/210920_-_rate_ratios_and_uptake_over_time.xlsx",
          DHB != "Unknown",
          Dose != 0)
 
-popn_dat <- read_excel("data/210920_-_rate_ratios_and_uptake_over_time.xlsx",
+popn_dat <- read_excel("data/210727_-_covid-19_vacine_equity_-_rate_ratios_and_uptake_over_time.xlsx",
                        sheet=5) %>%
   rename(Ethnicity = `Ethnic group`,
          Age = `Age group`,
