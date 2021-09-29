@@ -9,10 +9,6 @@ library(gganimate)
 
 source('helpers.R')
 
-popn_summary <- prioritised_ethnicity_by_dhb() %>%
-  group_by(DHB, Age) %>%
-  summarise(Population = sum(Population))
-
 # latest spreadsheet
 read_vacc_sheet <- function(file) {
   vacc <- read_excel(file, sheet = "DHBofResidence by ethnicity")
