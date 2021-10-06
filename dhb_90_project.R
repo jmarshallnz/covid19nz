@@ -10,7 +10,7 @@ popn_summary <- prioritised_ethnicity_by_dhb() %>%
   summarise(Population = sum(Population))
 
 # latest spreadsheet
-read_vacc_sheet <- function(file) {
+read_vacc_sheet <- function(file, collapse_age = FALSE) {
   vacc <- read_excel(file, sheet = "DHBofResidence by ethnicity")
   
   if (!("Age group" %in% names(vacc))) {
@@ -23,12 +23,15 @@ read_vacc_sheet <- function(file) {
                                Dose2 = `Second dose administered`,
                                Population) %>%
     filter(DHB != "Overseas / Unknown") %>%
-    filter(DHB != "Various") %>%
-    mutate(Age = fct_collapse(Age,
+    filter(DHB != "Various")
+  if (collapse_age) {
+    vacc_dhbs <- vacc_dhbs %>% mutate(Age = fct_collapse(Age,
                               "12 to 29" = c("12-15", "16-19", "20-24", "25-29"),
                               "30 to 49" = c("30-34", "35-39", "40-44", "45-49"),
                               "50 to 64" = c("50-54", "55-59", "60-64"),
-                              "65+" = c("65-69", "70-74", "75-79", "80-84", "85-89", "90+"))) %>%
+                              "65+" = c("65-69", "70-74", "75-79", "80-84", "85-89", "90+")))
+  }
+  vacc_dhbs <- vacc_dhbs %>%
     pivot_longer(Dose1:Dose2, names_to="Dose", values_to="Vacc", names_prefix="Dose") %>%
     group_by(DHB, Age, Dose) %>%
     summarise(Vacc = sum(Vacc), Population = sum(Population))
@@ -44,7 +47,7 @@ read_vacc_sheet <- function(file) {
 }
 
 curr_date <- get_latest_date()
-current_counts <- read_vacc_sheet(get_latest_sheet())
+current_counts <- read_vacc_sheet(get_latest_sheet(), collapse_age=TRUE)
 
 #colours <- get_pal("Kotare")[c(6,2,1)]
 colours <- get_pal("Hoiho")[c(4,2,4)]
