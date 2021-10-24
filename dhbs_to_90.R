@@ -54,7 +54,7 @@ do_plot <- function(data, label) {
     geom_segment(aes(y = fct_rev(DHB), yend=DHB, x = Min, xend = Max, col=Col), size=5) +
     geom_vline(aes(xintercept=0.9))+
     geom_text(data=numbers, aes(y=fct_rev(DHB), x = Vacc, label=Number, hjust=Just),
-              size = 4) +
+              size = 4.5, col='grey40') +
     theme_minimal(base_size = 18) +
     scale_x_continuous(labels = scales::label_percent(), breaks=c(0.7,0.8,0.9), expand=c(0.05,0.01)) +
     scale_colour_manual(values = cols %>% deframe(),
