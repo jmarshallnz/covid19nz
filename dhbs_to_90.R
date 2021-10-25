@@ -8,7 +8,7 @@ dailies <- dhb_files %>%
   extract(files, into="date", regex="([0-9-]+)", remove=FALSE) %>%
   mutate(date = ymd(date)) %>%
   arrange(desc(date)) %>%
-  slice(1:2) %>%
+#  slice(1:2) %>%
   pull(files) %>%
   map_dfr(read_csv) %>%
   pivot_longer(Dose1:Dose2,
@@ -18,70 +18,111 @@ dailies <- dhb_files %>%
                names_transform = list(Dose = as.numeric)) %>%
   filter(!(DHB %in% c("Overseas / Unknown", "Total"))) %>%
   mutate(DHB = fct_recode(DHB,
-                          `Hawke's Bay` = "Hawkes Bay"))
+                          `Hawke's Bay` = "Hawkes Bay"),
+         DHB = fct_rev(DHB)) %>%
+  group_by(DHB, Dose) %>%
+  arrange(Date) %>%
+  mutate(Number = Vacc - lag(Vacc)) %>%
+  ungroup() %>%
+  mutate(Number = if_else(Date == max(Date), Number, NA_real_)) %>%
+  mutate(Vacc = Vacc/Population,
+         Today = if_else(Date == max(Date), "Today", "Previous"))
 
-# Pull out today and yesterady
-today <- dailies %>% filter(Date == max(Date))
-yesterday <- dailies %>% filter(Date == min(Date))
+today <- format(dailies %>% pull(Date) %>% max(), "%A")
 
-# Combine into one ready for plotting
-ready <- today %>% rename(Today = Vacc) %>% left_join(yesterday %>% rename(Yesterday = Vacc) %>% select(-Date)) %>%
-  mutate(Number = Today - Yesterday) %>%
-  pivot_longer(c(Today, Yesterday), names_to="Day", values_to="Vacc") %>%
-  mutate(Vacc = Vacc/Population)
+dose1 <- dailies %>%
+  filter(Dose == 1) 
 
-do_plot <- function(data, label) {
-  cols <- data.frame(name = c("TodayLow",
-                              "YesterdayLow",
-                              "YesterdayHigh",
-                              "TodayHigh"),
-                     values = get_pal("Takapu")[1:4])
+label_dose1 <- dose1 %>%
+  filter(DHB == "Bay of Plenty", Today == "Today") %>%
+  select(DHB,Vacc)
 
-  numbers <- data %>% select(Dose, DHB, Vacc, Number) %>%
-    group_by(Dose, DHB) %>% mutate(Test = if_else(max(Vacc) > 0.9, "Right", "Left")) %>%
-    filter((Test == "Left" & Vacc == min(Vacc)) |
-             (Test == "Right" & Vacc == max(Vacc))) %>%
-    mutate(Just = if_else(Test == "Left", 1.1, -0.1),
-           Number = prettyNum(Number, big.mark=","))
+colours_dose1 <- c("#C582B2", "#B7B7B2")
 
-  plotme <- data %>% mutate(Side = if_else(Vacc < 0.9, "Low", "High")) %>%
-    mutate(Col = paste0(Day, Side),
-           Min = pmin(Vacc, 0.9),
-           Max = pmax(Vacc, 0.9)) %>%
-    arrange(Min, desc(Max))
-
-  ggplot(plotme) +
-    geom_segment(aes(y = fct_rev(DHB), yend=DHB, x = Min, xend = Max, col=Col), size=5) +
-    geom_vline(aes(xintercept=0.9))+
-    geom_text(data=numbers, aes(y=fct_rev(DHB), x = Vacc, label=Number, hjust=Just),
-              size = 4.5, col='grey40') +
-    theme_minimal(base_size = 18) +
-    scale_x_continuous(labels = scales::label_percent(), breaks=c(0.7,0.8,0.9), expand=c(0.05,0.01)) +
-    scale_colour_manual(values = cols %>% deframe(),
-                        guide = 'none') +
-    theme(panel.grid.major.y = element_blank(),
-          axis.text = element_text(size = rel(0.8)),
-          plot.tag.position = c(0.99, -0.02),
-          plot.tag = element_text(hjust = 1, size = rel(0.6),
-                                  vjust = 1,
-                                  colour = 'grey50'),
-          plot.margin = margin(6, 6, 30, 6)) +
-    labs(x = NULL,
-         y = NULL,
-         title = "Road to 90%",
-         tag = "Data from Ministry of Health. Chart by Jonathan Marshall. https://github.com/jmarshallnz/covid19nz")
-}
-
-png("today_dose1.png", width=900, height=640)
-do_plot(ready %>% filter(Dose == 1)) +
-  labs(  
-    subtitle=paste("First doses given on", format(today %>% pull(Date) %>% unique(), "%A, %d %B %Y"))
-    )
+png("today_dose1.png", width=1800, height=1280)
+ggplot(dose1 %>% filter(Today == "Today"),
+       mapping = aes(y=DHB, x=Vacc)) +
+  geom_line(data=dose1, col='grey40') +
+  geom_point(data=dose1,
+             size=6, fill='white', shape=21, col='grey40') +
+  geom_segment(aes(yend=DHB, xend=0.9, col=Vacc > 0.9), size=4) +
+  geom_vline(xintercept=0.9) +
+  geom_point(aes(col=Vacc > 0.9), size=8) +
+  annotate(geom="curve",curvature=0.2,x=0.77,y=13.8,xend=0.778,yend=13,arrow=arrow(angle=20, type='closed'), col="grey70") +
+  annotate(geom="text", x=0.77, y=13.8, hjust=0.5, vjust=-0.3, label="Previous days", size=8, col="grey70") +
+  geom_text(data=label_dose1, hjust = 0, label=paste0(" doses ", today),
+            col = "grey50", vjust=-0.8, size=8) +
+  geom_text(aes(label=prettyNum(Number,big.mark=","), hjust=Vacc < 0.9), col="grey50", vjust=-0.8, size=8) +
+  scale_colour_manual(values = colours_dose1,
+                      guide = 'none') +
+  theme_minimal(base_size=36) +
+  scale_x_continuous(labels = scales::label_percent(), breaks=c(0.7,0.8,0.9), expand=c(0,0.005)) +
+#  scale_colour_manual(values = cols %>% deframe(),
+#                      guide = 'none') +
+  theme(panel.grid.major.y = element_line(color='grey96', size=0.5),
+        axis.text = element_text(size = rel(0.7)),
+        plot.tag.position = c(0.99, -0.02),
+        plot.tag = element_text(hjust = 1, size = rel(0.6),
+                                vjust = 1,
+                                colour = 'grey50'),
+        plot.margin = margin(12, 12, 60, 12)) +
+  labs(x = NULL,
+       y = NULL,
+       subtitle = paste0("How the ",
+                      prettyNum(dose1 %>% filter(Today == "Today") %>% summarise(sum(Number)), big.mark=","),
+                      " first doses on ",
+                      today,
+                      " move each DHB towards 90%"),
+       title = paste("Road to 90%: First doses to",
+       format(dailies %>% pull(Date) %>% max(), "%d %B %Y")),
+       tag = "Data from Ministry of Health. Chart by Jonathan Marshall. https://github.com/jmarshallnz/covid19nz")
 dev.off()
 
-png("today_dose2.png", width=900, height=700)
-do_plot(ready %>% filter(Dose == 2)) +
-  labs(  
-    subtitle=paste("Second doses given on", format(today %>% pull(Date) %>% unique(), "%A, %d %B %Y"))
-  )
+dose2 <- dailies %>%
+  filter(Dose == 2) 
+
+label_dose2 <- dose2 %>%
+  filter(DHB == "Bay of Plenty", Today == "Today") %>%
+  select(DHB,Vacc)
+
+colours_dose2 <- c("#C89C63", "#B7B7B2")
+
+png("today_dose2.png", width=1800, height=1280)
+ggplot(dose2 %>% filter(Today == "Today"),
+       mapping = aes(y=DHB, x=Vacc)) +
+  geom_line(data=dose2, col='grey40') +
+  geom_point(data=dose2,
+             size=6, fill='white', shape=21, col='grey40') +
+  geom_segment(aes(yend=DHB, xend=0.9, col=Vacc > 0.9), size=4) +
+  geom_vline(xintercept=0.9) +
+  geom_point(aes(col=Vacc > 0.9), size=8) +
+  annotate(geom="curve",curvature=-0.2,x=0.63,y=17.2,xend=0.642,yend=18,arrow=arrow(angle=20, type='closed'), col="grey70") +
+  annotate(geom="text", x=0.63, y=16.8, hjust=0.5, vjust=-0.1, label="Previous days", size=8, col="grey70") +
+  geom_text(data=label_dose2, hjust = 0, label=" doses Sunday",
+            col = "grey50", vjust=-0.8, size=8) +
+  geom_text(aes(label=prettyNum(Number,big.mark=","),
+                hjust=Vacc < 0.9), col="grey50", vjust=-0.8, size=8) +
+  scale_colour_manual(values = colours_dose2,
+                      guide = 'none') +
+  theme_minimal(base_size=36) +
+  scale_x_continuous(labels = scales::label_percent(), breaks=c(0.7,0.8,0.9), expand=c(0,0.005)) +
+  #  scale_colour_manual(values = cols %>% deframe(),
+  #                      guide = 'none') +
+  theme(panel.grid.major.y = element_line(color='grey96', size=0.5),
+        axis.text = element_text(size = rel(0.7)),
+        plot.tag.position = c(0.99, -0.02),
+        plot.tag = element_text(hjust = 1, size = rel(0.6),
+                                vjust = 1,
+                                colour = 'grey50'),
+        plot.margin = margin(12, 12, 60, 12)) +
+  labs(x = NULL,
+       y = NULL,
+       subtitle = paste0("How the ",
+                         prettyNum(dose2 %>% filter(Today == "Today") %>% summarise(sum(Number)), big.mark=","),
+                         " second doses on ",
+                         today,
+                         " move each DHB towards 90%"),
+       title = paste("Road to 90%: Second doses to",
+                     format(dailies %>% pull(Date) %>% max(), "%d %B %Y")),
+       tag = "Data from Ministry of Health. Chart by Jonathan Marshall. https://github.com/jmarshallnz/covid19nz")
 dev.off()
