@@ -73,7 +73,7 @@ ggplot(dose1 %>% filter(Today == "Today"),
                       " first doses on ",
                       today,
                       " move each DHB towards 90%"),
-       title = paste("Road to 90%: First doses to",
+       title = paste("Path to 90%: First doses to",
        format(dailies %>% pull(Date) %>% max(), "%d %B %Y")),
        tag = "Data from Ministry of Health. Chart by Jonathan Marshall. https://github.com/jmarshallnz/covid19nz")
 dev.off()
@@ -122,7 +122,7 @@ ggplot(dose2 %>% filter(Today == "Today"),
                          " second doses on ",
                          today,
                          " move each DHB towards 90%"),
-       title = paste("Road to 90%: Second doses to",
+       title = paste("Path to 90%: Second doses to",
                      format(dailies %>% pull(Date) %>% max(), "%d %B %Y")),
        tag = "Data from Ministry of Health. Chart by Jonathan Marshall. https://github.com/jmarshallnz/covid19nz")
 dev.off()
