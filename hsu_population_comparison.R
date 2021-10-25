@@ -45,6 +45,24 @@ hsu_dhbs %>% filter() %>%
   anti_join(statsnz_popn) %>%
   arrange(desc(HSU))
 
+hsu_dhbs %>% group_by(DHB, Age, Ethnicity) %>%
+  summarise(HSU = sum(HSU)) %>%
+  left_join(
+    statsnz_popn %>% group_by(DHB, Age, Ethnicity) %>%
+      summarise(StatsNZ = sum(StatsNZ))
+  ) %>%
+  pivot_longer(HSU:StatsNZ, names_to="Method", values_to="Population") %>%
+  filter(Ethnicity != "Unknown",
+         Ethnicity != "Various",
+         DHB != "Overseas / Unknown") %>%
+  write_csv("data/dhb_projections/hsu_comparison.csv")
+  ggplot() +
+  geom_col(mapping=aes(x=Age, y=Population, fill=Method),
+           position='dodge') +
+  facet_grid(vars(DHB), vars(Ethnicity), scales='free_y') +
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+
 # Ok, so the "other" ethnicity and "other" gender are a thing, as is various DHB stuff.
 
 # Now compare total counts
