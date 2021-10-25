@@ -56,15 +56,21 @@ cumm_vacc <- weekly_vacc %>% group_by(Dose, DHB) %>%
   mutate(Week = as.Date(Week),
          Dose = paste("Dose", Dose),
          OverTheLine = Vacc/Population >= 0.9)
-cumm_vacc %>% filter(OverTheLine)
+
+curr_vacc %>% filter(OverTheLine)
+
+latest_date <- curr_vacc %>% pull(Week) %>% max()
+
+cols <- scales:::viridis_pal(1, 0, 1, 1)(2)
+
 png("vacc_by_dhb.png", width=1980, height=1080)
-ggplot(cumm_vacc) +
-  geom_hline(yintercept=90, size=1) +
-  geom_line(aes(x=Week, y=Vacc/Population*100, group=Dose), col='black', size=4) +
-  geom_line(aes(x=Week, y=Vacc/Population*100, col=Dose), size=3) +
+ggplot(curr_vacc) +
+  geom_hline(yintercept=0.9, size=1) +
+  geom_line(aes(x=Week, y=Vacc/Population, group=Dose), col='black', size=4) +
+  geom_line(aes(x=Week, y=Vacc/Population, col=Dose), size=3) +
   facet_wrap(vars(DHB)) +
-  scale_color_viridis_d(direction = 1) +
-  scale_y_continuous(limits = c(0,100), breaks=90) +
+  scale_color_manual(values = cols) +
+  scale_y_continuous(limits = c(0,0.95), breaks=0.9, labels=scales::label_percent()) +
   scale_x_date(date_breaks = "1 month", date_labels = "%b") +
   guides(colour = guide_legend(nrow = 1),
          alpha = 'none') +
@@ -72,11 +78,12 @@ ggplot(cumm_vacc) +
   labs(x = NULL,
        y = NULL,
        colour = NULL,
-       title = "Are we there yet? Progress to 90%") +
+       title = paste("Are we there yet? Progress to 90% at", format(latest_date, "%d %B %Y"))) +
   theme(legend.position='bottom',
         legend.key.width = unit(48, "pt"),
         axis.text = element_text(size = 18),
         panel.grid.major.y = element_blank(),
         panel.grid.major.x = element_line(size=0.5),
-        panel.grid.minor = element_blank())
+        panel.grid.minor = element_blank(),
+        strip.text = element_text(hjust=0))
 dev.off()
