@@ -98,7 +98,7 @@ ggplot(dose2 %>% filter(Today == "Today"),
   geom_point(aes(col=Vacc > 0.9), size=8) +
   annotate(geom="curve",curvature=-0.2,x=0.63,y=17.2,xend=0.642,yend=18,arrow=arrow(angle=20, type='closed'), col="grey70") +
   annotate(geom="text", x=0.63, y=16.8, hjust=0.5, vjust=-0.1, label="Previous days", size=8, col="grey70") +
-  geom_text(data=label_dose2, hjust = 0, label=" doses Sunday",
+  geom_text(data=label_dose2, hjust = 0, label=paste0(" doses ", today),
             col = "grey50", vjust=-0.8, size=8) +
   geom_text(aes(label=prettyNum(Number,big.mark=","),
                 hjust=Vacc < 0.9), col="grey50", vjust=-0.8, size=8) +
