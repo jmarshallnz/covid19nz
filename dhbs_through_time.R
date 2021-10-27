@@ -2,7 +2,7 @@ library(tidyverse)
 library(lubridate)
 library(readxl)
 
-equity_sheet <- "data/211017_-_cvip_equity_-_rate_ratios_and_uptake_over_time.xlsx"
+equity_sheet <- "data/equity/rate_ratio/211024_-_cvip_equity_-_rate_ratios_and_uptake_over_time.xlsx"
 
 vacc_dat <- read_excel(equity_sheet,
                   sheet=4) %>%
