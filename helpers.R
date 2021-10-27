@@ -4,10 +4,17 @@ library(readxl)
 
 # helper function to grab the date of latest spreadsheet file from data/ folder
 get_latest_date <- function() {
+  my_sub <- function(pattern, replacement, x) {
+    wch <- grepl(pattern, x)
+    y <- sub(pattern, replacement, x)
+    y[!wch] <- NA
+    print(y)
+    y
+  }
   vacc_data <- data.frame(file = list.files(path = "data",
                                             pattern = ".xlsx", full.names=TRUE))
   vacc_data %>%
-    mutate(week = dmy(sub(".*_([0-9]+_[0-9]+_2021)(.*)xlsx", "\\1", file))) %>%
+    mutate(week = dmy(my_sub(".*_([0-9]+_[0-9]+_2021)(.*).xlsx", "\\1", file))) %>%
     arrange(desc(week)) %>%
     slice(1) %>%
     pull(week)
@@ -15,10 +22,17 @@ get_latest_date <- function() {
 
 # helper function to grab the latest spreadsheet file from the data/ folder
 get_latest_sheet <- function(weeks_ago = 0) {
+  my_sub <- function(pattern, replacement, x) {
+    wch <- grepl(pattern, x)
+    y <- sub(pattern, replacement, x)
+    y[!wch] <- NA
+    print(y)
+    y
+  }
   vacc_data <- data.frame(file = list.files(path = "data",
                                             pattern = ".xlsx", full.names=TRUE))
   vacc_data %>%
-    mutate(week = dmy(sub(".*_([0-9]+_[0-9]+_2021)(.*)xlsx", "\\1", file))) %>%
+    mutate(week = dmy(my_sub(".*_([0-9]+_[0-9]+_2021)(.*).xlsx", "\\1", file))) %>%
     arrange(desc(week)) %>%
     slice(weeks_ago + 1) %>%
     pull(file)
