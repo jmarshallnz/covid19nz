@@ -10,6 +10,7 @@ current_date <- foo %>% html_element(".well-sm") %>% html_element("p") %>% html_
   sub(".*?([0-9]+) (.*) 2021.*", "\\1-\\2-2021", x=.) %>%
   lubridate::dmy()
 
+print(current_date)
 # Table: This doesn't seem particularly robust. How can we subset the html nodes down to just what we want?
 
 tab <- foo %>% html_element("h4 + table") %>% html_table()
