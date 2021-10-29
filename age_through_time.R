@@ -1,6 +1,11 @@
 library(tidyverse)
 library(lubridate)
 library(readxl)
+library(showtext)
+
+font_add_google("Source Sans Pro", "ssp", bold.wt = 600)
+
+showtext_auto()
 
 equity_sheet <- "data/equity/rate_ratio/211024_-_cvip_equity_-_rate_ratios_and_uptake_over_time.xlsx"
 
@@ -56,17 +61,29 @@ cumm_vacc <- weekly_vacc %>% group_by(Age, Dose) %>%
 
 png("vacc_by_age_through_time.png", width=1980, height=1080)
 ggplot(cumm_vacc) +
-  geom_line(aes(x=Week, y=Vacc/Population*100, group=Age), col='black', size=4) +
-  geom_line(aes(x=Week, y=Vacc/Population*100, col=Age), size=3) +
+  geom_hline(yintercept=0.9) +
+  geom_line(aes(x=Week, y=Vacc/Population, group=Age), col='black', size=4) +
+  geom_line(aes(x=Week, y=Vacc/Population, col=Age), size=3) +
   facet_wrap(vars(Dose)) +
   scale_color_viridis_d(direction = -1) +
-  scale_y_continuous(limits = c(0,100), expand=c(0,0), breaks=seq(0,100,by=20)) +
+  scale_y_continuous(limits = c(0,1), expand=c(0,0), breaks=seq(0,1,by=0.1), labels=c(rep("",9),"90%","")) +
   scale_x_date(date_breaks = "1 month", date_labels = "%b") +
   guides(colour = guide_legend(nrow = 1)) +
-  theme_minimal(base_size=36) +
+  theme_minimal(base_size=36, base_family = "ssp") +
   labs(x = NULL,
        y = "Doses per 100 people",
-       title = "COVID-19 Vaccination rates by Age: The race is on") +
+       title = "COVID-19 Vaccination rates by Age: The race is on",
+       tag = "Data from Ministry of Health. Chart by Jonathan Marshall. https://github.com/jmarshallnz/covid19nz") +
   theme(legend.position='bottom',
-        legend.key.width = unit(48, "pt"))
+        legend.key.width = unit(48, "pt"),
+        panel.grid.minor = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.major.y = element_line(color='grey90', size=0.5),
+        strip.text = element_text(hjust=0),
+        plot.title = element_text(face="bold"),
+        plot.tag = element_text(hjust = 1, size = rel(0.6),
+                                vjust = 1,
+                                colour = 'grey50'),
+        plot.tag.position = c(0.99, -0.02),
+        plot.margin = margin(12, 12, 60, 12))
 dev.off()
