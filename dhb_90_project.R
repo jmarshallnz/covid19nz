@@ -2,6 +2,11 @@ library(tidyverse)
 library(lubridate)
 library(readxl)
 library(Manu)
+library(showtext)
+
+font_add_google("Source Sans Pro", "ssp", bold.wt = 600)
+
+showtext_auto()
 
 source('helpers.R')
 
@@ -63,22 +68,30 @@ current_counts %>%
   labs(title = "The 90% project: vaccination rates by DHB and Age",
        x = NULL,
        y = NULL,
-       shape = NULL) +
+       shape = NULL,
+       tag = "Data from Ministry of Health. Chart by Jonathan Marshall. https://github.com/jmarshallnz/covid19nz") +
   annotate("text", x=0.9, y=18, label="90%", size=10) +
   scale_y_discrete(expand=c(0.03,0,0.03,0)) +
   guides(fill = 'none') +
-  theme_minimal(base_size=36) +
+  theme_minimal(base_size = 36, base_family = "ssp") +
   theme(panel.spacing.x = unit(108, "pt"),
         legend.position = 'bottom',
-        plot.title = element_text(size=54),
         legend.margin = margin(),
         panel.grid.major.y = element_blank(),
         panel.grid.minor.x = element_blank(),
-        axis.text.x = element_text(size=24, colour='grey70'),
-        plot.margin = margin(48, 48, 48, 48, "pt")) +
+        panel.grid.major.x = element_line(color='grey90', size=0.5),
+        axis.text.x = element_text(size=24, colour='grey80'),
+        strip.text = element_text(hjust=0),
+        plot.title = element_text(face="bold"),
+        plot.tag = element_text(hjust = 1, size = rel(0.6),
+                                vjust = 1,
+                                colour = 'grey50'),
+        plot.tag.position = c(1.005, -0.02),
+        plot.margin = margin(12, 36, 60, 12)) +
   coord_cartesian(clip="off")
 dev.off()
 
+if (0) {
 # same thing, but animated...
 vacc_dat <- read_excel("data/210920_-_rate_ratios_and_uptake_over_time.xlsx",
                        sheet=4) %>%
@@ -161,5 +174,4 @@ anim <- ggplot(ready_to_go) +
 
 animate(anim, renderer = gifski_renderer(file="90_project_progress.gif", loop=TRUE),
         width = 1280, height = 720, units = "px", duration=5 + length(unique(ready_to_go$Week)) / 5, end_pause=5)
-
-
+}
