@@ -32,7 +32,8 @@ dailies <- dhb_files %>%
   mutate(Number = if_else(Date == max(Date), Number, NA_real_)) %>%
   mutate(Vacc = Vacc/Population,
          Today = if_else(Date == max(Date), "Today", "Previous"),
-         Previous = if_else(as.numeric(max(Date) - Date, units='days') %% 7 == 0, "weeks", "days,"))
+         Previous = if_else(as.numeric(max(Date) - Date, units='days') %% 7 == 0, "weeks", "days,")) %>%
+  arrange(Previous, Date)
 
 today <- format(dailies %>% pull(Date) %>% max(), "%A")
 
