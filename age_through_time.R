@@ -7,7 +7,7 @@ font_add_google("Source Sans Pro", "ssp", bold.wt = 600)
 
 showtext_auto()
 
-equity_sheet <- "data/equity/rate_ratio/211024_-_cvip_equity_-_rate_ratios_and_uptake_over_time.xlsx"
+equity_sheet <- "data/equity/rate_ratio/211031_-_cvip_equity_-_rate_ratios_and_uptake_over_time.xlsx"
 
 vacc_dat <- read_excel(equity_sheet,
                   sheet=4) %>%
@@ -17,7 +17,7 @@ vacc_dat <- read_excel(equity_sheet,
          Age = `Age group`,
          DHB = `DHB of residence`,
          Vacc = `# doses administered`) %>%
-  filter(Dose != 0) %>%
+  filter(Dose %in% c(1,2)) %>%
   filter(!(Age %in% c("0 to 4", "5 to 9", "Unknown"))) %>%
   group_by(Week, Dose, Age) %>%
   summarise(Vacc = sum(Vacc))
