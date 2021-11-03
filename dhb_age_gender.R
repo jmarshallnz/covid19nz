@@ -34,6 +34,9 @@ read_vacc_sheet <- function(file) {
                               "30 to 49" = c("30-34", "35-39", "40-44", "45-49"),
                               "50 to 64" = c("50-54", "55-59", "60-64"),
                               "65+" = c("65-69", "70-74", "75-79", "80-84", "85-89", "90+"))) %>%
+    mutate(DHB = fct_collapse(DHB,
+                              `Auckland Metro` = c("Auckland", "Counties Manukau", "Waitemata"),
+                              `Capital & Coast and Hutt Valley` = c("Capital and Coast", "Hutt Valley"))) %>%
     pivot_longer(Dose1:Dose2, names_to="Dose", values_to="Vacc", names_prefix="Dose") %>%
     group_by(DHB, Age, Dose) %>%
     summarise(Vacc = sum(Vacc), Population = sum(Population))

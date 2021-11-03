@@ -59,7 +59,7 @@ current_counts %>%
   mutate(Dose = fct_recode(Dose, `One Dose` = "1", `Fully vaccinated` = "2")) %>%
   ggplot() +
   geom_line(aes(x=Prop, y=fct_rev(DHB)), col="grey70", size=2) +
-  geom_segment(data=NULL, aes(x=0.9,y=0.5, xend=0.9,yend=17.5), size=1.5, col="grey30") +
+  geom_segment(data=NULL, aes(x=0.9,y=0.5, xend=0.9,yend=20.5), size=1.5, col="grey30") +
   geom_point(aes(x=Prop, y=fct_rev(DHB), shape=Age, fill=Prop >= 0.9), size=6) +
   facet_wrap(vars(Dose)) +
   scale_fill_manual(values = colours) +
@@ -70,7 +70,7 @@ current_counts %>%
        y = NULL,
        shape = NULL,
        tag = "Data from Ministry of Health. Chart by Jonathan Marshall. https://github.com/jmarshallnz/covid19nz") +
-  annotate("text", x=0.9, y=18, label="90%", size=10) +
+  annotate("text", x=0.9, y=21, label="90%", size=10) +
   scale_y_discrete(expand=c(0.03,0,0.03,0)) +
   guides(fill = 'none') +
   theme_minimal(base_size = 36, base_family = "ssp") +
