@@ -84,7 +84,7 @@ to_triangles <- function(vacc_counts) {
   return(tris_long)
 }
 
-curr_date <- get_latest_date()
+curr_date <- str_trim(format(get_latest_date(), "%e %B %Y"))
 current_counts <- read_vacc_sheet(get_latest_sheet())
 current <- to_triangles(current_counts)
 
@@ -116,7 +116,7 @@ ggplot(current) +
   facet_wrap(vars(Age), ncol=4) +
   scale_size_identity(guide = 'none') +
   labs(fill=NULL,
-       title=paste("COVID-19 Vaccination rates by Age group and District Health Board at", format(curr_date, "%d %B %Y"), "\n"),
+       title=paste("COVID-19 Vaccination rates by Age group and District Health Board at", curr_date, "\n"),
        tag = "Data from Ministry of Health. Chart by Jonathan Marshall. https://github.com/jmarshallnz/covid19nz") +
   theme_void(base_size=36, base_family="ssp") +
   theme(legend.position='bottom',
