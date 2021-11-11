@@ -49,6 +49,7 @@ read_vacc_sheet <- function(file, collapse_age = FALSE) {
 
 curr_date <- get_latest_date()
 current_counts <- read_vacc_sheet(get_latest_sheet(), collapse_age=TRUE)
+todays_date <- format(curr_date, "%e %B %Y") %>% str_trim()
 
 #colours <- get_pal("Kotare")[c(6,2,1)]
 colours <- get_pal("Hoiho")[c(4,2,4)]
@@ -65,7 +66,7 @@ current_counts %>%
   scale_fill_manual(values = colours) +
   scale_shape_manual(values = paste(c("circle", "square", "diamond", "triangle"), "filled")) +
   scale_x_continuous(limits = c(0,1), expand=c(0,0), breaks=seq(0,1,by=0.2), labels = scales::label_percent()) +
-  labs(title = "The 90% project: vaccination rates by DHB and Age",
+  labs(title = paste("The 90% project: vaccination rates by DHB and Age at", todays_date),
        x = NULL,
        y = NULL,
        shape = NULL,

@@ -59,6 +59,8 @@ cumm_vacc <- weekly_vacc %>% group_by(Age, Dose) %>%
          Dose = paste("Dose", Dose)) %>%
   mutate(Week = as.Date(Week))
 
+todays_date <- format(cumm_vacc %>% pull(Week) %>% max(), "%e %B %Y") %>% str_trim()
+
 png("vacc_by_age_through_time.png", width=1980, height=1080)
 ggplot(cumm_vacc) +
   geom_hline(yintercept=0.9) +
@@ -72,7 +74,7 @@ ggplot(cumm_vacc) +
   theme_minimal(base_size=36, base_family = "ssp") +
   labs(x = NULL,
        y = "Doses per 100 people",
-       title = "COVID-19 Vaccination rates by Age: The race is on",
+       title = paste("COVID-19 Vaccination rates by Age: The race at", todays_date),
        tag = "Data from Ministry of Health. Chart by Jonathan Marshall. https://github.com/jmarshallnz/covid19nz") +
   theme(legend.position='bottom',
         legend.key.width = unit(48, "pt"),
