@@ -21,7 +21,7 @@ dailies <- dhb_files %>%
                values_to = "Vacc",
                names_prefix="Dose",
                names_transform = list(Dose = as.numeric)) %>%
-  filter(!(DHB %in% c("Overseas / Unknown", "Total"))) %>%
+  filter(!(DHB %in% c("Overseas / Unknown", "Total", "New Zealand", "All DHBs to 90%"))) %>%
   mutate(DHB = fct_recode(DHB,
                           `Hawke's Bay` = "Hawkes Bay"),
          DHB = fct_rev(DHB)) %>%
