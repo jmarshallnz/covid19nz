@@ -30,7 +30,8 @@ dailies <- dhb_files %>%
   mutate(Number = Vacc - lag(Vacc)) %>%
   ungroup() %>%
   mutate(Number = if_else(Date == max(Date), Number, NA_real_)) %>%
-  mutate(Vacc = Vacc/Population,
+  mutate(Raw = Vacc,
+         Vacc = Vacc/Population,
          Today = if_else(Date == max(Date), "Today", "Previous"),
          Previous = if_else(as.numeric(max(Date) - Date, units='days') %% 7 == 0, "weeks", "days,")) %>%
   arrange(Previous, Date)
@@ -149,3 +150,29 @@ ggplot(dose2 %>% filter(Today == "Today"),
        title = paste("Path to 90%: Second doses to", todays_date),
        tag = "Data from Ministry of Health. Chart by Jonathan Marshall. https://github.com/jmarshallnz/covid19nz")
 dev.off()
+
+#### Summary information
+
+# Total since traffic lights
+dailies %>%
+  filter(Date %in% c(min(Date), max(Date))) %>%
+  group_by(Dose, Date) %>%
+  summarise(Total = sum(Raw), Population = sum(Population)) %>%
+  arrange(Date) %>%
+  summarise(Dots = diff(Total), Population = unique(Population))
+
+# Best performers since traffic lights
+dots <- dailies %>%
+  filter(Date %in% c(min(Date), max(Date))) %>%
+  group_by(DHB, Dose) %>%
+  arrange(Date) %>%
+  summarise(Dots = diff(Vacc), Population = unique(Population)) %>%
+  ungroup()
+
+dots %>%
+  filter(Dose == 1) %>%
+  slice_max(Dots, n=3)
+
+dots %>%
+  filter(Dose == 2) %>%
+  slice_max(Dots, n=3)

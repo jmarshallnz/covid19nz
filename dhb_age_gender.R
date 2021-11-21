@@ -90,7 +90,8 @@ current <- to_triangles(current_counts)
 
 current_counts %>% group_by(DHB, Age) %>%
   mutate(Prop = Count/sum(Count)) %>%
-  filter(Vacc == "Unprotected") %>% arrange(Prop)
+  filter(Vacc == "Unprotected") %>% arrange(Prop) %>%
+  as.data.frame()
 
 #labs <- expand(, 
 labs <- DHBins:::dhbs
