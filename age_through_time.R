@@ -20,7 +20,13 @@ vacc_dat <- read_excel(equity_sheet,
   filter(Dose %in% c(1,2)) %>%
   filter(!(Age %in% c("0 to 4", "5 to 9", "Unknown"))) %>%
   group_by(Week, Dose, Age) %>%
-  summarise(Vacc = sum(Vacc))
+  summarise(Vacc = sum(Vacc)) %>%
+  # Filter out the last week if it has zero vacc
+  group_by(Week) %>%
+  mutate(Total = sum(Vacc)) %>%
+  ungroup() %>%
+  filter(Week != max(Week) | Total > 0) %>%
+  select(-Total)
 
 popn_dat <- read_excel(equity_sheet,
                        sheet=5) %>%
