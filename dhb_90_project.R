@@ -56,8 +56,13 @@ colours <- get_pal("Hoiho")[c(4,2,4)]
 
 png("vacc_90_percent.png", width=1980, height=1080)
 current_counts %>%
+  ungroup() %>%
   mutate(Prop = Vacc/Population) %>%
   mutate(Dose = fct_recode(Dose, `One Dose` = "1", `Fully vaccinated` = "2")) %>%
+  mutate(DHB = fct_recode(DHB,
+                          `Hawke's Bay` = "Hawkes Bay",
+                          'Waitemat\u0101' = "Waitemata",
+                          'Tair\u0101whiti' = "Tairawhiti")) %>%
   ggplot() +
   geom_line(aes(x=Prop, y=fct_rev(DHB)), col="grey70", size=2) +
   geom_segment(data=NULL, aes(x=0.9,y=0.5, xend=0.9,yend=20.5), size=1.5, col="grey30") +

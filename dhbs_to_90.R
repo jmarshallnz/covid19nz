@@ -23,7 +23,9 @@ dailies <- dhb_files %>%
                names_transform = list(Dose = as.numeric)) %>%
   filter(!(DHB %in% c("Overseas / Unknown", "Total", "New Zealand", "All DHBs to 90%"))) %>%
   mutate(DHB = fct_recode(DHB,
-                          `Hawke's Bay` = "Hawkes Bay"),
+                          `Hawke's Bay` = "Hawkes Bay",
+                          'Waitemat\u0101' = "Waitemata",
+                          'Tair\u0101whiti' = "Tairawhiti"),
          DHB = fct_rev(DHB)) %>%
   group_by(DHB, Dose) %>%
   arrange(Date) %>%
