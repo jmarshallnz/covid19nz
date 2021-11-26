@@ -72,7 +72,7 @@ ggplot(dose1 %>% filter(Today == "Today"),
   scale_fill_manual(values = c(`days,` = 'white', weeks = 'grey70'),
                     guide = guide_legend(override.aes = list(size=5))) +
   theme_minimal(base_size=36, base_family = "ssp") +
-  scale_x_continuous(labels = scales::label_percent(), breaks=c(0.7,0.8,0.9), expand=c(0,0.005)) +
+  scale_x_continuous(labels = scales::label_percent(), breaks=c(0.7,0.8,0.9), expand=c(0,0.005,0,0.01)) +
   theme(panel.grid.major.y = element_line(color='grey96', size=0.5),
         axis.text = element_text(size = rel(0.7)),
         plot.title = element_text(face="bold"),
