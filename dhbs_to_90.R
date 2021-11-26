@@ -3,6 +3,8 @@ library(lubridate)
 library(Manu)
 library(showtext)
 
+source("fixup_weirdness.R")
+
 font_add_google("Source Sans Pro", "ssp", bold.wt = 600)
 
 showtext_auto()
@@ -31,6 +33,7 @@ dailies <- dhb_files %>%
   arrange(Date) %>%
   mutate(Number = Vacc - lag(Vacc)) %>%
   ungroup() %>%
+  fixup_weirdness() %>%
   mutate(Number = if_else(Date == max(Date), Number, NA_real_)) %>%
   mutate(Raw = Vacc,
          Vacc = Vacc/Population,

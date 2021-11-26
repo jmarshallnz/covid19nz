@@ -15,6 +15,13 @@ print(current_date)
 
 tab <- foo %>% html_element("h4 + table") %>% html_table()
 
+# Change at 25 November
+if (all(c("Partially vaccinated", "Fully vaccinated") %in% names(tab))) {
+  names(tab)[names(tab) == ""] <- paste("empty", seq_len(sum(names(tab) == "")))
+  tab <- tab %>% rename(`First doses` = "Partially vaccinated",
+                        `Second doses` = "Fully vaccinated")
+}
+
 final <- tab %>% select(DHB = 1, Dose1 = 'First doses', Dose2 = 'Second doses', Population) %>%
   mutate(across(-DHB, readr::parse_number)) %>%
   mutate(Date = current_date)
