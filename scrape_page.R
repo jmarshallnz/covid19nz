@@ -22,6 +22,13 @@ if (all(c("Partially vaccinated", "Fully vaccinated") %in% names(tab))) {
                         `Second doses` = "Fully vaccinated")
 }
 
+# Change at 1 December
+if (all(c("At least partially vaccinated", "Fully vaccinated") %in% names(tab))) {
+  names(tab)[names(tab) == ""] <- paste("empty", seq_len(sum(names(tab) == "")))
+  tab <- tab %>% rename(`First doses` = "At least partially vaccinated",
+                        `Second doses` = "Fully vaccinated")
+}
+
 final <- tab %>% select(DHB = 1, Dose1 = 'First doses', Dose2 = 'Second doses', Population) %>%
   mutate(across(-DHB, readr::parse_number)) %>%
   mutate(Date = current_date)

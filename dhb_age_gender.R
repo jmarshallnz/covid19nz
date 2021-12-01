@@ -21,7 +21,12 @@ read_vacc_sheet <- function(file) {
   if (!("Age group" %in% names(vacc))) {
     return(NULL)
   }
-
+  
+  if ("At least partially vaccinated" %in% names(vacc)) {
+    vacc <- vacc %>% rename('First dose administered' = "At least partially vaccinated",
+                            'Second dose administered' = "Fully vaccinated")
+  }
+  
   vacc_dhbs <- vacc %>% select(DHB = `DHB of residence`,
                                Age = `Age group`,
                                Dose1 = `First dose administered`,

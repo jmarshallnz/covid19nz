@@ -7,16 +7,17 @@ font_add_google("Source Sans Pro", "ssp", bold.wt = 600)
 
 showtext_auto()
 
-equity_sheet <- "data/equity/rate_ratio/20211121_-_cvip_equity_-_rate_ratios_and_uptake_over_time.xlsx"
+equity_sheet <- "data/equity/rate_ratio/20211128_-_cvip_equity_-_rate_ratios_and_uptake_over_time.xlsx"
 
 vacc_dat <- read_excel(equity_sheet,
                   sheet=4) %>%
   rename(Week = `Week ending date`,
-         Dose = `Dose number`,
          Ethnicity = `Ethnic group`,
          Age = `Age group`,
          DHB = `DHB of residence`,
-         Vacc = `# doses administered`) %>%
+         Dose1 = 5,
+         Dose2 = 6) %>%
+  pivot_longer(Dose1:Dose2, names_to="Dose", names_prefix="Dose", values_to="Vacc") %>%
   filter(Dose %in% c(1,2)) %>%
   filter(!(Age %in% c("0 to 4", "5 to 9", "Unknown"))) %>%
   group_by(Week, Dose, Age) %>%
