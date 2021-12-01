@@ -49,24 +49,31 @@ dose1 <- dailies %>%
   filter(Dose == 1) 
 
 label_dose1 <- dose1 %>%
-  filter(DHB == "Bay of Plenty", Today == "Today") %>%
+  filter(DHB == "Northland", Today == "Today") %>%
   select(DHB,Vacc)
+
+dose1_labelled <- dose1 %>% mutate(
+  Label = prettyNum(Number,big.mark=","),
+  Label = if_else(DHB == "Bay of Plenty" & Today == "Today",
+                   paste0(Label, " doses ", today),
+                  Label)
+  )
 
 colours_dose1 <- c("#C582B2", "#B7B7B2")
 
 png("today_dose1.png", width=1800, height=1280)
-ggplot(dose1 %>% filter(Today == "Today"),
+ggplot(dose1_labelled %>% filter(Today == "Today"),
        mapping = aes(y=DHB, x=Vacc)) +
-  geom_line(data=dose1, col='grey40') +
-  geom_point(data=dose1, aes(fill = Previous),
+  geom_line(data=dose1_labelled, col='grey40') +
+  geom_point(data=dose1_labelled, aes(fill = Previous),
              size=6, shape=21, col='grey40') +
   geom_segment(aes(yend=DHB, xend=0.9, col=Vacc > 0.9), size=4) +
   geom_vline(xintercept=0.9) +
   geom_point(aes(col=Vacc > 0.9), size=8) +
   annotate(geom="curve",curvature=0.2,x=0.77,y=13.8,xend=0.778,yend=13,arrow=arrow(angle=20, type='closed'), col="grey70") +
-  geom_text(data=label_dose1, hjust = 0, label=paste0(" doses ", today),
-            col = "grey50", vjust=-0.8, size=8) +
-  geom_text(aes(label=prettyNum(Number,big.mark=","), hjust=Vacc < 0.9), col="grey50", vjust=-0.8, size=8) +
+#  geom_text(data=label_dose1, hjust=0, label=paste0(" doses ", today),
+#            col = "grey50", vjust=-0.8, size=8) +
+  geom_text(aes(label=Label, hjust=Vacc < 0.9), col="grey50", vjust=-0.8, size=8) +
   scale_colour_manual(values = colours_dose1,
                       guide = 'none') +
   scale_fill_manual(values = c(`days,` = 'white', weeks = 'grey70'),
