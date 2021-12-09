@@ -9,3 +9,6 @@ source("dhbs_to_90.R")
 source("dhb_90_project.R")
 source("age_through_time.R") #< update equity sheet first
 source("dhb_age_gender.R")
+
+# 4. Unprotected percentages
+source("unprotected_percentages.R")
