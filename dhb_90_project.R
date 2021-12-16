@@ -75,7 +75,7 @@ current_counts %>%
   facet_wrap(vars(Dose)) +
   scale_fill_manual(values = colours) +
   scale_shape_manual(values = paste(c("circle", "square", "diamond", "triangle"), "filled")) +
-  scale_x_continuous(limits = c(0,1), expand=c(0,0), breaks=seq(0,1,by=0.2), labels = scales::label_percent()) +
+  scale_x_continuous(limits = c(0,1.01), expand=c(0,0), breaks=seq(0,1,by=0.2), labels = scales::label_percent()) +
   labs(title = paste("The 90% project: vaccination rates by DHB and Age at", todays_date),
        x = NULL,
        y = NULL,
