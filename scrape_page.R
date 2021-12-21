@@ -13,25 +13,35 @@ current_date <- foo %>% html_element(".well-sm") %>% html_element("p") %>% html_
 print(current_date)
 # Table: This doesn't seem particularly robust. How can we subset the html nodes down to just what we want?
 
-tab <- foo %>% html_element("h4 + table") %>% html_table()
+tabs <- foo %>% html_elements("h4 + table")
 
-# Change at 25 November
-if (all(c("Partially vaccinated", "Fully vaccinated") %in% names(tab))) {
-  names(tab)[names(tab) == ""] <- paste("empty", seq_len(sum(names(tab) == "")))
-  tab <- tab %>% rename(`First doses` = "Partially vaccinated",
-                        `Second doses` = "Fully vaccinated")
+read_vacc_table <- function(tab, current_date) {
+  # Change at 25 November
+  if (all(c("Partially vaccinated", "Fully vaccinated") %in% names(tab))) {
+    names(tab)[names(tab) == ""] <- paste("empty", seq_len(sum(names(tab) == "")))
+    tab <- tab %>% rename(`First doses` = "Partially vaccinated",
+                          `Second doses` = "Fully vaccinated")
+  }
+
+  # Change at 1 December
+  if (all(c("At least partially vaccinated", "Fully vaccinated") %in% names(tab))) {
+    names(tab)[names(tab) == ""] <- paste("empty", seq_len(sum(names(tab) == "")))
+    tab <- tab %>% rename(`First doses` = "At least partially vaccinated",
+                          `Second doses` = "Fully vaccinated")
+  }
+
+  final <- tab %>% select(DHB = 1, Dose1 = 'First doses', Dose2 = 'Second doses', Population) %>%
+    mutate(across(-DHB, readr::parse_number)) %>%
+    mutate(Date = current_date)
+  final
 }
-
-# Change at 1 December
-if (all(c("At least partially vaccinated", "Fully vaccinated") %in% names(tab))) {
-  names(tab)[names(tab) == ""] <- paste("empty", seq_len(sum(names(tab) == "")))
-  tab <- tab %>% rename(`First doses` = "At least partially vaccinated",
-                        `Second doses` = "Fully vaccinated")
-}
-
-final <- tab %>% select(DHB = 1, Dose1 = 'First doses', Dose2 = 'Second doses', Population) %>%
-  mutate(across(-DHB, readr::parse_number)) %>%
-  mutate(Date = current_date)
 
 out_file <- sprintf("%s.csv", current_date)
-write_csv(final, file.path("data/dhb_daily", out_file))
+read_vacc_table(tabs[[1]] %>% html_table(), current_date) %>%
+  write_csv(file.path("data/dhb_daily", out_file))
+
+read_vacc_table(tabs[[2]] %>% html_table(), current_date) %>%
+  write_csv(file.path("data/dhb_daily/maori", out_file))
+
+read_vacc_table(tabs[[3]] %>% html_table(), current_date) %>%
+  write_csv(file.path("data/dhb_daily/pacific", out_file))
