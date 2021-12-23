@@ -7,7 +7,7 @@ font_add_google("Source Sans Pro", "ssp", bold.wt = 600)
 
 showtext_auto()
 
-equity_sheet <- "data/equity/rate_ratio/20211212_-_cvip_equity_-_rate_ratios_and_uptake_over_time.xlsx"
+equity_sheet <- "data/equity/rate_ratio/20211219_-_cvip_equity_-_rate_ratios_and_uptake_over_time.xlsx"
 
 vacc_dat <- read_excel(equity_sheet,
                   sheet=4) %>%
