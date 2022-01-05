@@ -79,12 +79,14 @@ to_triangles <- function(vacc_counts) {
 
   # Convert back to long format
   tris_long <- tibble(DHB=rep(rownames(tris),6),
-                      Vacc=as.vector(tris),
+                      Vacc=factor(as.vector(tris), levels = c("Unprotected",
+                                                              "Partially protected",
+                                                              "Protected")),
                       tri_id=rep(1:6,each=nrow(tris))) %>%
     separate(DHB, into=c("DHB", "Age"), sep="_") %>%
     mutate(DHB = fct_recode(DHB,
-                            "Wellington" = "Capital & Coast and Hutt Valley")) %>%
-    mutate(Vacc = fct_relevel(Vacc, "Unprotected", "Partially protected"))
+                            "Wellington" = "Capital & Coast and Hutt Valley")) #%>%
+   # mutate(Vacc = fct_relevel(Vacc, "Unprotected", "Partially protected"))
 
   return(tris_long)
 }
@@ -112,6 +114,7 @@ labs <- labs %>% mutate(Age = "65+",
 #colours <- get_pal("Hoiho")[c(1,2,4)]
 colours <- get_pal("Takahe")[c(1,4,3)]
 colours[2] <- "#7cacbf"
+colours <- set_names(colours, levels(current$Vacc))
 #colours <- c("#e36879", "#7cacbf", "#1F6683")
 png("dhb_by_age.png", width=1980, height=1080)
 ggplot(current) +
