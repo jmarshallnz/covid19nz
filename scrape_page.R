@@ -7,7 +7,7 @@ foo <- read_html(page)
 
 # Date:
 current_date <- foo %>% html_element(".well-sm") %>% html_element("p") %>% html_text() %>%
-  sub(".*?([0-9]+) (.*) 2021.*", "\\1-\\2-2021", x=.) %>%
+  sub(".*?([0-9]+) (.*) 2022.*", "\\1-\\2-2022", x=.) %>%
   lubridate::dmy()
 
 print(current_date)
