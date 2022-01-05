@@ -42,6 +42,7 @@ dailies <- dhb_files %>%
   arrange(Previous, Date)
 
 today <- format(dailies %>% pull(Date) %>% max(), "%A")
+#today <- "Friday and Saturday"
 todays_date <- format(dailies %>% pull(Date) %>% max(), "%e %B %Y") %>%
   str_trim()
 
