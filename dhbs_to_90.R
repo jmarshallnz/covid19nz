@@ -165,6 +165,11 @@ ggplot(dose2 %>% filter(Today == "Today"),
 dev.off()
 
 #### Summary information
+dose1 %>% filter(Date == max(Date)) %>%
+  mutate(ToGo95 = 0.95*Population - Raw)
+
+dose2 %>% filter(Date == max(Date)) %>%
+  mutate(ToGo90 = 0.9*Population - Raw)
 
 # Total since traffic lights
 dailies %>%
