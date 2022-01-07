@@ -62,6 +62,8 @@ dose1_labelled <- dose1 %>% mutate(
 
 colours_dose1 <- c("#C582B2", "#B7B7B2")
 
+size <- list(text = 6, theme=28)
+
 png("today_dose1.png", width=1800, height=1280)
 ggplot(dose1_labelled %>% filter(Today == "Today"),
        mapping = aes(y=DHB, x=Vacc)) +
@@ -74,12 +76,12 @@ ggplot(dose1_labelled %>% filter(Today == "Today"),
   annotate(geom="curve",curvature=0.2,x=0.77,y=13.8,xend=0.778,yend=13,arrow=arrow(angle=20, type='closed'), col="grey70") +
 #  geom_text(data=label_dose1, hjust=0, label=paste0(" doses ", today),
 #            col = "grey50", vjust=-0.8, size=8) +
-  geom_text(aes(label=Label, hjust=Vacc < 0.9), col="grey50", vjust=-0.8, size=8) +
+  geom_text(aes(label=Label, hjust=Vacc < 0.9), col="grey50", vjust=-0.8, size=size$text) +
   scale_colour_manual(values = colours_dose1,
                       guide = 'none') +
   scale_fill_manual(values = c(`days,` = 'white', weeks = 'grey70'),
                     guide = guide_legend(override.aes = list(size=5))) +
-  theme_minimal(base_size=36, base_family = "ssp") +
+  theme_minimal(base_size=size$theme, base_family = "ssp") +
   scale_x_continuous(labels = scales::label_percent(), breaks=c(0.7,0.8,0.9), expand=c(0,0.005,0,0.01)) +
   theme(panel.grid.major.y = element_line(color='grey96', size=0.5),
         axis.text = element_text(size = rel(0.7)),
@@ -128,14 +130,14 @@ ggplot(dose2 %>% filter(Today == "Today"),
   geom_point(aes(col=Vacc > 0.9), size=8) +
   annotate(geom="curve",curvature=-0.2,x=0.63,y=17.2,xend=0.642,yend=18,arrow=arrow(angle=20, type='closed'), col="grey70") +
   geom_text(data=label_dose2, hjust = 0, label=paste0(" doses ", today),
-            col = "grey50", vjust=-0.8, size=8) +
+            col = "grey50", vjust=-0.8, size=size$text) +
   geom_text(aes(label=prettyNum(Number,big.mark=","),
-                hjust=Vacc < 0.9), col="grey50", vjust=-0.8, size=8) +
+                hjust=Vacc < 0.9), col="grey50", vjust=-0.8, size=size$text) +
   scale_colour_manual(values = colours_dose2,
                       guide = 'none') +
   scale_fill_manual(values = c(`days,` = 'white', weeks = 'grey70'),
                     guide = guide_legend(override.aes = list(size=5))) +
-  theme_minimal(base_size=36, base_family = "ssp") +
+  theme_minimal(base_size=size$theme, base_family = "ssp") +
   scale_x_continuous(labels = scales::label_percent(), breaks=c(0.7,0.8,0.9), expand=c(0,0.005,0,0.015)) +
   theme(panel.grid.major.y = element_line(color='grey96', size=0.5),
         axis.text = element_text(size = rel(0.7)),
