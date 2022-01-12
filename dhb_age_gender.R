@@ -103,13 +103,14 @@ current_counts %>% group_by(DHB, Age) %>%
 #labs <- expand(, 
 labs <- DHBins:::dhbs
 labs <- labs %>% mutate(Age = "65+",
-           size = if_else(shortname == "NM", 5.5, 6),
+           size = if_else(shortname == "NM", 0.9, 1),
            vjust = case_when(str_detect(printname, "Metro") ~ 0.6,
                              shortname == "HB" ~ 0.6,
                              shortname == "NM" ~ 0.3,
                              shortname == "SC" ~ 0.4,
                              TRUE ~ 0.5))
 
+setup <- list(theme = 28, text=4.5)
 #colours <- get_pal("Kotare")[c(6,2,1)]
 #colours <- get_pal("Hoiho")[c(1,2,4)]
 colours <- get_pal("Takahe")[c(1,4,3)]
@@ -120,14 +121,14 @@ png("dhb_by_age.png", width=1980, height=1080)
 ggplot(current) +
   geom_dhbtri(aes(map_id=DHB,class_id=tri_id, fill=Vacc), alpha=0.9) +
   scale_fill_manual(values = colours)+
-  geom_text(data=labs, aes(x=x, y=y, label=printname, size=size, vjust=vjust), col="white") +
+  geom_text(data=labs, aes(x=x, y=y, label=printname, size=setup$text*size, vjust=vjust), col="white") +
 #  geom_label_dhb(size=7) +
   facet_wrap(vars(Age), ncol=4) +
   scale_size_identity(guide = 'none') +
   labs(fill=NULL,
        title=paste("COVID-19 Vaccination rates by Age group and District Health Board at", curr_date, "\n"),
        tag = "Data from Ministry of Health. Chart by Jonathan Marshall. https://github.com/jmarshallnz/covid19nz") +
-  theme_void(base_size=36, base_family="ssp") +
+  theme_void(base_size=setup$theme, base_family="ssp") +
   theme(legend.position='bottom',
         strip.text = element_text(hjust=0),
         plot.title = element_text(face="bold"),

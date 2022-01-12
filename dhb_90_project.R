@@ -59,6 +59,8 @@ todays_date <- format(curr_date, "%e %B %Y") %>% str_trim()
 #colours <- get_pal("Kotare")[c(6,2,1)]
 colours <- get_pal("Hoiho")[c(4,2,4)]
 
+size <- list(theme = 28)
+
 png("vacc_90_percent.png", width=1980, height=1080)
 current_counts %>%
   ungroup() %>%
@@ -75,7 +77,7 @@ current_counts %>%
   facet_wrap(vars(Dose)) +
   scale_fill_manual(values = colours) +
   scale_shape_manual(values = paste(c("circle", "square", "diamond", "triangle"), "filled")) +
-  scale_x_continuous(limits = c(0,1.01), expand=c(0,0), breaks=seq(0,1,by=0.2), labels = scales::label_percent()) +
+  scale_x_continuous(limits = c(0,1.02), expand=c(0,0), breaks=seq(0,1,by=0.2), labels = scales::label_percent()) +
   labs(title = paste("The 90% project: vaccination rates by DHB and Age at", todays_date),
        x = NULL,
        y = NULL,
@@ -84,14 +86,14 @@ current_counts %>%
   annotate("text", x=0.9, y=21, label="90%", size=10) +
   scale_y_discrete(expand=c(0.03,0,0.03,0)) +
   guides(fill = 'none') +
-  theme_minimal(base_size = 36, base_family = "ssp") +
-  theme(panel.spacing.x = unit(108, "pt"),
+  theme_minimal(base_size = size$theme, base_family = "ssp") +
+  theme(panel.spacing.x = unit(size$theme*3, "pt"),
         legend.position = 'bottom',
         legend.margin = margin(),
         panel.grid.major.y = element_blank(),
         panel.grid.minor.x = element_blank(),
         panel.grid.major.x = element_line(color='grey90', size=0.5),
-        axis.text.x = element_text(size=24, colour='grey80'),
+        axis.text.x = element_text(size=rel(0.7), colour='grey80'),
         strip.text = element_text(hjust=0),
         plot.title = element_text(face="bold"),
         plot.tag = element_text(hjust = 1, size = rel(0.6),
