@@ -70,7 +70,7 @@ ggplot(dose1_labelled %>% filter(Today == "Today"),
   geom_line(data=dose1_labelled, col='grey40') +
   geom_point(data=dose1_labelled, aes(fill = Previous),
              size=6, shape=21, col='grey40') +
-  geom_segment(aes(yend=DHB, xend=0.9, col=Vacc > 0.9), size=4) +
+  geom_segment(aes(yend=DHB, xend=0.9, col=Vacc > 0.9, alpha=Vacc > 0.9), size=4) +
   geom_vline(xintercept=0.9) +
   geom_point(aes(col=Vacc > 0.9), size=8) +
   annotate(geom="curve",curvature=0.2,x=0.77,y=13.8,xend=0.778,yend=13,arrow=arrow(angle=20, type='closed'), col="grey70") +
@@ -79,6 +79,7 @@ ggplot(dose1_labelled %>% filter(Today == "Today"),
   geom_text(aes(label=Label, hjust=Vacc < 0.9), col="grey50", vjust=-0.8, size=size$text) +
   scale_colour_manual(values = colours_dose1,
                       guide = 'none') +
+  scale_alpha_manual(values = c(1,0), guide='none') +
   scale_fill_manual(values = c(`days,` = 'white', weeks = 'grey70'),
                     guide = guide_legend(override.aes = list(size=5))) +
   theme_minimal(base_size=size$theme, base_family = "ssp") +
@@ -132,7 +133,7 @@ ggplot(dose2_labelled %>% filter(Today == "Today"),
   geom_line(data=dose2_labelled, col='grey40') +
   geom_point(data=dose2_labelled, aes(fill = Previous),
              size=6, shape=21, col='grey40') +
-  geom_segment(aes(yend=DHB, xend=0.9, col=Vacc > 0.9), size=4) +
+  geom_segment(aes(yend=DHB, xend=0.9, col=Vacc > 0.9, alpha=Vacc > 0.9), size=4) +
   geom_vline(xintercept=0.9) +
   geom_point(aes(col=Vacc > 0.9), size=8) +
   annotate(geom="curve",curvature=-0.2,x=0.63,y=17.2,xend=0.642,yend=18,arrow=arrow(angle=20, type='closed'), col="grey70") +
@@ -141,6 +142,7 @@ ggplot(dose2_labelled %>% filter(Today == "Today"),
   geom_text(aes(label=Label, hjust=Vacc < 0.9), col="grey50", vjust=-0.8, size=size$text) +
   scale_colour_manual(values = colours_dose2,
                       guide = 'none') +
+  scale_alpha_manual(values = c(1,0), guide='none') +
   scale_fill_manual(values = c(`days,` = 'white', weeks = 'grey70'),
                     guide = guide_legend(override.aes = list(size=5))) +
   theme_minimal(base_size=size$theme, base_family = "ssp") +
