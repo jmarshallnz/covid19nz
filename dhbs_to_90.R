@@ -62,7 +62,8 @@ dose1_labelled <- dose1 %>% mutate(
 
 colours_dose1 <- c("#C582B2", "#B7B7B2")
 
-size <- list(text = 6, theme=28)
+#size <- list(text = 6, theme=28)
+size <- list(text = 8, theme=36)
 
 png("today_dose1.png", width=1800, height=1280)
 ggplot(dose1_labelled %>% filter(Today == "Today"),
