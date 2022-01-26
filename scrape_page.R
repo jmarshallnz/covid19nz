@@ -36,6 +36,13 @@ read_vacc_table <- function(tab, current_date) {
   final
 }
 
+read_firstdose_table <- function(tab, current_date) {
+  final <- tab %>% select(DHB = 1, Dose1 = 'At least partially vaccinated', Population) %>%
+    mutate(across(-DHB, readr::parse_number)) %>%
+    mutate(Date = current_date)
+  final
+}
+
 out_file <- sprintf("%s.csv", current_date)
 read_vacc_table(tabs[[1]] %>% html_table(), current_date) %>%
   write_csv(file.path("data/dhb_daily", out_file))
@@ -45,3 +52,12 @@ read_vacc_table(tabs[[2]] %>% html_table(), current_date) %>%
 
 read_vacc_table(tabs[[3]] %>% html_table(), current_date) %>%
   write_csv(file.path("data/dhb_daily/pacific", out_file))
+
+read_firstdose_table(tabs[[4]] %>% html_table(), current_date) %>%
+  write_csv(file.path("data/dhb_daily/5-11", out_file))
+
+read_firstdose_table(tabs[[5]] %>% html_table(), current_date) %>%
+  write_csv(file.path("data/dhb_daily/5-11/maori", out_file))
+
+read_firstdose_table(tabs[[6]] %>% html_table(), current_date) %>%
+  write_csv(file.path("data/dhb_daily/5-11/pacific", out_file))
