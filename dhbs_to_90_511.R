@@ -50,14 +50,14 @@ dose1 <- dailies %>%
   filter(Dose == 1) 
 
 label_dose1 <- dose1 %>%
-  filter(DHB == "Northland", Today == "Today") %>%
+  filter(DHB == "Bay of Plenty", Today == "Today") %>%
   select(DHB,Vacc)
 
 dose1_labelled <- dose1 %>% mutate(
-  Label = prettyNum(Number,big.mark=","),
-  Label = if_else(DHB == "Bay of Plenty" & Today == "Today",
-                   paste0(Label, " doses ", today),
-                  Label)
+  Label = prettyNum(Number,big.mark=",") #,
+#  Label = if_else(DHB == "Bay of Plenty" & Today == "Today",
+#                   paste0(Label, " doses ", today),
+#                  Label)
   )
 
 colours_dose1 <- c("#ab82c5", "#B7B7B2")
@@ -74,15 +74,15 @@ ggplot(dose1_labelled %>% filter(Today == "Today"),
   geom_segment(aes(yend=DHB, xend=0.9, col=Vacc > 0.9, alpha=Vacc > 0.9), size=4) +
   geom_vline(xintercept=0.9) +
   geom_point(aes(col=Vacc > 0.9), size=8) +
-#  annotate(geom="curve",curvature=0.2,x=0.77,y=13.8,xend=0.778,yend=13,arrow=arrow(angle=20, type='closed'), col="grey70") +
-#  geom_text(data=label_dose1, hjust=0, label=paste0(" doses ", today),
-#            col = "grey50", vjust=-0.8, size=8) +
-#  geom_text(aes(label=Label, hjust=Vacc < 0.9), col="grey50", vjust=-0.8, size=size$text) +
+  annotate(geom="curve",curvature=-0.2,x=0.18,y=17.2,xend=0.195,yend=18,arrow=arrow(angle=20, type='closed'), col="grey70") +
+  geom_text(data=label_dose1, hjust=0, label=paste0(" doses ", today),
+            col = "grey50", vjust=-0.8, size=8) +
+  geom_text(aes(label=Label, hjust=Vacc < 0.9), col="grey50", vjust=-0.8, size=size$text) +
   scale_colour_manual(values = colours_dose1,
                       guide = 'none') +
   scale_alpha_manual(values = c(1,0), guide='none') +
   scale_fill_manual(values = c(`days,` = 'white', weeks = 'grey70'),
-                    guide = 'none') + #guide_legend(override.aes = list(size=5))) +
+                    guide = guide_legend(override.aes = list(size=5))) +
   theme_minimal(base_size=size$theme, base_family = "ssp") +
   scale_x_continuous(labels = scales::label_percent(), breaks=seq(0.1,0.9,by=0.1), expand=c(0,0.005,0,0.01)) +
   theme(panel.grid.major.y = element_line(color='grey96', size=0.5),
@@ -100,15 +100,14 @@ ggplot(dose1_labelled %>% filter(Today == "Today"),
         legend.text = element_text(size = rel(0.65),
                                    colour = 'grey70', vjust=1),
         legend.spacing.x = unit(3, units='pt'),
-        legend.position=c(0.11, 0.675)) +
+        legend.position=c(0.11, 0.82)) +
   labs(x = NULL,
        y = NULL,
-       subtitle = NULL,
-#                  paste0("How the ",
-#                      prettyNum(dose1 %>% filter(Today == "Today") %>% summarise(sum(Number)), big.mark=","),
-#                      " first doses on ",
-#                      today,
-#                      " move each DHB towards 90%"),
+       subtitle = paste0("How the ",
+                      prettyNum(dose1 %>% filter(Today == "Today") %>% summarise(sum(Number)), big.mark=","),
+                      " first doses on ",
+                      today,
+                      " move each DHB towards 90%"),
        title = paste("Path to 90%: First doses of those 5-11 to", todays_date),
        tag = "Data from Ministry of Health. Chart by Jonathan Marshall. https://github.com/jmarshallnz/covid19nz")
 dev.off()
