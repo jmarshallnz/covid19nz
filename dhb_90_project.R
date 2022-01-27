@@ -32,7 +32,7 @@ read_vacc_sheet <- function(file, collapse_age = FALSE) {
     filter(DHB != "Various")
   if (collapse_age) {
     vacc_dhbs <- vacc_dhbs %>% mutate(Age = fct_collapse(Age,
-                              "12 to 29" = c("12-15", "16-19", "20-24", "25-29"),
+                              "12 to 29" = c("12-18", "19-24", "12-15", "16-19", "20-24", "25-29"),
                               "30 to 49" = c("30-34", "35-39", "40-44", "45-49"),
                               "50 to 64" = c("50-54", "55-59", "60-64"),
                               "65+" = c("65-69", "70-74", "75-79", "80-84", "85-89", "90+")))
