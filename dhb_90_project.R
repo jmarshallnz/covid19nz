@@ -59,7 +59,8 @@ todays_date <- format(curr_date, "%e %B %Y") %>% str_trim()
 #colours <- get_pal("Kotare")[c(6,2,1)]
 colours <- get_pal("Hoiho")[c(4,2,4)]
 
-size <- list(theme = 28)
+#size <- list(theme = 28)
+size <- list(theme = 36)
 
 png("vacc_90_percent.png", width=1980, height=1080)
 current_counts %>%

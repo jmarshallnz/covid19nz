@@ -110,7 +110,8 @@ labs <- labs %>% mutate(Age = "65+",
                              shortname == "SC" ~ 0.4,
                              TRUE ~ 0.5))
 
-setup <- list(theme = 28, text=4.5)
+#setup <- list(theme = 28, text=4.5)
+setup <- list(theme = 36, text=6)
 #colours <- get_pal("Kotare")[c(6,2,1)]
 #colours <- get_pal("Hoiho")[c(1,2,4)]
 colours <- get_pal("Takahe")[c(1,4,3)]
