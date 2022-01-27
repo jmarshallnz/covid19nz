@@ -7,7 +7,7 @@ font_add_google("Source Sans Pro", "ssp", bold.wt = 600)
 
 showtext_auto()
 
-equity_sheet <- "data/equity/rate_ratio/20211219_-_cvip_equity_-_rate_ratios_and_uptake_over_time.xlsx"
+equity_sheet <- "data/equity/rate_ratio/20220124_-_cvip_equity_-_rate_ratios_and_uptake_over_time.xlsx"
 
 vacc_dat <- read_excel(equity_sheet,
                   sheet=4) %>%
@@ -72,10 +72,10 @@ cumm_vacc <- weekly_vacc %>% group_by(Age, Dose) %>%
 todays_date <- format(cumm_vacc %>% pull(Week) %>% max(), "%e %B %Y") %>% str_trim()
 
 png("vacc_by_age_through_time.png", width=1980, height=1080)
-ggplot(cumm_vacc) +
+ggplot(cumm_vacc %>% ungroup() %>% arrange(desc(Age), Week)) +
   geom_hline(yintercept=0.9) +
   geom_line(aes(x=Week, y=Vacc/Population, group=Age), col='black', size=4) +
-  geom_line(aes(x=Week, y=Vacc/Population, col=Age), size=3) +
+  geom_line(aes(x=Week, y=Vacc/Population, group=fct_rev(Age), col=Age), size=3) +
   facet_wrap(vars(Dose)) +
   scale_color_viridis_d(direction = -1) +
   scale_y_continuous(limits = c(0,1), expand=c(0,0), breaks=seq(0,1,by=0.1), labels=c(rep("",9),"90%","")) +
