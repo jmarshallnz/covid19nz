@@ -179,7 +179,10 @@ dev.off()
 
 #### Summary information
 dose1 %>% filter(Date == max(Date)) %>%
-  mutate(ToGo95 = 0.95*Population - Raw)
+  mutate(ToGo95 = 0.95*Population - Raw,
+         ToGo90 = 0.90*Population - Raw,
+         PropToday = Number/Population) %>%
+  arrange(desc(PropToday))
 
 dose2 %>% filter(Date == max(Date)) %>%
   mutate(ToGo90 = 0.9*Population - Raw)
