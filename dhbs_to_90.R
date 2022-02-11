@@ -78,6 +78,8 @@ ggplot(dose1_labelled %>% filter(Today == "Today"),
 #  geom_text(data=label_dose1, hjust=0, label=paste0(" doses ", today),
 #            col = "grey50", vjust=-0.8, size=8) +
   geom_text(aes(label=Label, hjust=Vacc < 0.9), col="grey50", vjust=-0.8, size=size$text) +
+#  annotate(geom="text", x=0.87, y=14.5, label="Every DHB", size=60, col=colours_dose1[1], alpha=0.6, fontface='bold') +
+#  annotate(geom="text", x=0.87, y=8.5, label="90%", size=200, col=colours_dose1[1], alpha=0.6, fontface='bold') +
   scale_colour_manual(values = colours_dose1,
                       guide = 'none') +
   scale_alpha_manual(values = c(1,0), guide='none') +
