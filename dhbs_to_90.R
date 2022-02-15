@@ -71,9 +71,9 @@ ggplot(dose1_labelled %>% filter(Today == "Today"),
   geom_line(data=dose1_labelled, col='grey40') +
   geom_point(data=dose1_labelled, aes(fill = Previous),
              size=6, shape=21, col='grey40') +
-  geom_segment(aes(yend=DHB, xend=0.9, col=Vacc > 0.9, alpha=Vacc > 0.9), size=4) +
+#  geom_segment(aes(yend=DHB, xend=0.9, col=Vacc > 0.9, alpha=Vacc > 0.9), size=4) +
   geom_vline(xintercept=0.9) +
-  geom_point(aes(col=Vacc > 0.9), size=8) +
+  geom_point(col = colours_dose1[2], size=8) +
   annotate(geom="curve",curvature=0.2,x=0.77,y=13.8,xend=0.778,yend=13,arrow=arrow(angle=20, type='closed'), col="grey70") +
 #  geom_text(data=label_dose1, hjust=0, label=paste0(" doses ", today),
 #            col = "grey50", vjust=-0.8, size=8) +
