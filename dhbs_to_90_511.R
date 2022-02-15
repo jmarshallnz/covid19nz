@@ -184,6 +184,9 @@ dose1 %>% filter(Date == max(Date)) %>%
          PropToday = Number/Population) %>%
   arrange(desc(PropToday))
 
+dose1 %>% filter(Date == max(Date)) %>%
+  arrange(desc(Vacc))
+
 dose2 %>% filter(Date == max(Date)) %>%
   mutate(ToGo90 = 0.9*Population - Raw)
 
