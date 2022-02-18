@@ -18,7 +18,7 @@ dailies <- dhb_files %>%
 #  slice(1:2) %>%
   pull(files) %>%
   map_dfr(read_csv) %>%
-  pivot_longer(Dose1:Dose2,
+  pivot_longer(starts_with("Dose"),
                names_to="Dose",
                values_to = "Vacc",
                names_prefix="Dose",

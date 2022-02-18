@@ -4,6 +4,11 @@
 # They were shifted back on 25 Nov.
 
 round_mean <- function(x) {
+  if (all(is.na(x))) {
+    return(x)
+  }
+#  cat("round_mean on ", length(x), "\n")
+#  print(x)
   ans <- rep(floor(mean(x)), length(x))
   num_extra <- sum(x) - sum(ans)
   ans[seq_len(num_extra)] <- ans[seq_len(num_extra)] + 1

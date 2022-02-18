@@ -29,15 +29,23 @@ read_vacc_table <- function(tab, current_date) {
     tab <- tab %>% rename(`First doses` = "At least partially vaccinated",
                           `Second doses` = "Fully vaccinated")
   }
+  
+  # Change at 18 Feb: boosters!
+  if (all(c("At least partially vacc", "Fully vacc") %in% names(tab))) {
+    names(tab)[names(tab) == ""] <- paste("empty", seq_len(sum(names(tab) == "")))
+    tab <- tab %>% rename(`First doses` = "At least partially vacc",
+                          `Second doses` = "Fully vacc",
+                          `Boosters` = "Received Booster")
+  }
 
-  final <- tab %>% select(DHB = 1, Dose1 = 'First doses', Dose2 = 'Second doses', Population) %>%
+  final <- tab %>% select(DHB = 1, Dose1 = 'First doses', Dose2 = 'Second doses', Dose3 = 'Boosters', Eligible = 'Eligible for Booster', Population) %>%
     mutate(across(-DHB, readr::parse_number)) %>%
     mutate(Date = current_date)
   final
 }
 
 read_firstdose_table <- function(tab, current_date) {
-  final <- tab %>% select(DHB = 1, Dose1 = 'At least partially vaccinated', Population) %>%
+  final <- tab %>% select(DHB = 1, Dose1 = 'At least partially vacc', Population) %>%
     mutate(across(-DHB, readr::parse_number)) %>%
     mutate(Date = current_date)
   final
