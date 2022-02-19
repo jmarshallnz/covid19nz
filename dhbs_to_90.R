@@ -177,6 +177,76 @@ ggplot(dose2_labelled %>% filter(Today == "Today"),
        tag = "Data from Ministry of Health. Chart by Jonathan Marshall. https://github.com/jmarshallnz/covid19nz")
 dev.off()
 
+# Population for dose 3
+library(readxl)
+hsu_pop <- read_excel("data/covid_vaccinations_01_02_2022.xlsx", "HSU Population") %>%
+  select(DHB = `DHB of residence`, Age = `Age group`,
+         Population) %>%
+  filter(!Age %in% c("0-4", "5-11", "12-17", "12+")) %>%
+  group_by(DHB) %>%
+  summarise(Population = sum(Population)) %>%
+  mutate(DHB = fct_recode(DHB,
+                          `Hawke's Bay` = "Hawkes Bay",
+                          'Waitemat\u0101' = "Waitemata",
+                          'Tair\u0101whiti' = "Tairawhiti"))
+dose3 <- dailies %>% filter(Dose == 3) %>% filter(!is.na(Eligible)) %>%
+  select(-Population, -Vacc) %>% left_join(hsu_pop, by='DHB') %>%
+  mutate(Vacc = Raw/Population)
+
+label_dose3 <- dose3 %>%
+  filter(DHB == "Bay of Plenty", Today == "Today") %>%
+  select(DHB,Vacc)
+
+colours_dose3 <- c("#51806a", "#B7B7B2")
+
+png("today_dose3.png", width=1800, height=1280)
+ggplot(dose3 %>% filter(Today == "Today"),
+       mapping = aes(y=DHB, x=Vacc)) +
+  geom_line(data=dose3, col='grey40') +
+  geom_point(data=dose3, aes(fill = Previous),
+             size=6, shape=21, col='grey40') +
+  geom_segment(aes(yend=DHB, xend=0.9, col=Vacc > 0.9, alpha=Vacc > 0.9), size=4) +
+  geom_vline(xintercept=0.9) +
+  geom_point(aes(col=Vacc > 0.9), size=8) +
+  annotate(geom="curve",curvature=-0.2,x=0.54,y=17.2,xend=0.555,yend=18,arrow=arrow(angle=20, type='closed'), col="grey70") +
+  geom_text(data=label_dose3, hjust = 0, label=paste0(" doses ", today),
+              col = "grey50", vjust=-0.8, size=size$text) +
+  geom_text(aes(label=prettyNum(Number,big.mark=","), hjust=Vacc < 0.9), col="grey50", vjust=-0.8, size=size$text) +
+  scale_colour_manual(values = colours_dose3,
+                      guide = 'none') +
+  scale_alpha_manual(values = c(1,0), guide='none') +
+  scale_fill_manual(values = c(`days,` = 'white', weeks = 'grey70'),
+                    guide = guide_legend(override.aes = list(size=5))) +
+  theme_minimal(base_size=size$theme, base_family = "ssp") +
+  scale_x_continuous(labels = scales::label_percent(), breaks=c(0.5,0.6,0.7,0.8,0.9), expand=c(0,0.01,0,0.02)) +
+  theme(panel.grid.major.y = element_line(color='grey96', size=0.5),
+        axis.text = element_text(size = rel(0.7)),
+        plot.title = element_text(face="bold"),
+        plot.subtitle = element_text(size = rel(0.9)),
+        plot.tag.position = c(0.99, -0.02),
+        plot.tag = element_text(hjust = 1, size = rel(0.6),
+                                vjust = 1,
+                                colour = 'grey50'),
+        plot.margin = margin(12, 12, 60, 12),
+        legend.direction = 'horizontal',
+        legend.title = element_text(size = rel(0.65),
+                                    colour = 'grey70', vjust=1),
+        legend.text = element_text(size = rel(0.65),
+                                   colour = 'grey70', vjust=1),
+        legend.spacing.x = unit(3, units='pt'),
+        legend.position=c(0.15, 0.82)) +
+  labs(x = NULL,
+       y = NULL,
+       subtitle = paste0("How the ",
+                         prettyNum(dose3 %>% filter(Today == "Today") %>% summarise(sum(Number)), big.mark=","),
+                         " booster doses on ",
+                         today,
+                         " move each DHB towards 90%"),
+       title = paste("Path to 90%: Booster doses of those 18+ to", todays_date),
+       tag = "Data from Ministry of Health. Chart by Jonathan Marshall. https://github.com/jmarshallnz/covid19nz")
+dev.off()
+
+
 #### Summary information
 dose1 %>% filter(Date == max(Date)) %>%
   mutate(ToGo99 = 0.99*Population - Raw,
@@ -185,6 +255,12 @@ dose1 %>% filter(Date == max(Date)) %>%
   arrange(desc(Vacc))
 
 dose2 %>% filter(Date == max(Date)) %>%
+  mutate(ToGo98 = 0.98*Population - Raw,
+         ToGo95 = 0.95*Population - Raw,
+         ToGo90 = 0.90*Population - Raw) %>%
+  arrange(desc(Vacc))
+
+dose3 %>% filter(Date == max(Date)) %>%
   mutate(ToGo98 = 0.98*Population - Raw,
          ToGo95 = 0.95*Population - Raw,
          ToGo90 = 0.90*Population - Raw) %>%
