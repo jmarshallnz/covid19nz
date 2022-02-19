@@ -16,6 +16,17 @@ round_mean <- function(x) {
   ans
 }
 
+my_cumsum <- function(x) {
+  # any NA at the start of x gets ignored...
+  first_non_na = match(FALSE, is.na(x))
+  if (all(is.na(first_non_na))) {
+    return(rep(NA, length(x)))
+  }
+  if (first_non_na == 1)
+    return(cumsum(x))
+  c(x[seq_len(first_non_na-1)], cumsum(x[-seq_len(first_non_na-1)]))
+}
+
 fixup_weirdness <- function(dat) {
   # Now update the counts accordingly. We want to take the average of the 23rd and 25th
   fixup <- dat %>% filter(Date %in% c(ymd("2021-11-23", "2021-11-25"))) %>%
@@ -29,7 +40,7 @@ fixup_weirdness <- function(dat) {
     group_by(DHB, Dose) %>%
     arrange(Date) %>%
     mutate(FixedVacc = if_else(is.na(Number), Vacc, Number)) %>%
-    mutate(FixedVacc = cumsum(FixedVacc))
+    mutate(FixedVacc = my_cumsum(FixedVacc))
 
   out <- fixed_up %>% select(-Vacc) %>% rename(Vacc = FixedVacc) %>%
     ungroup()
@@ -46,7 +57,7 @@ fixup_weirdness <- function(dat) {
     group_by(DHB, Dose) %>%
     arrange(Date) %>%
     mutate(FixedVacc = if_else(is.na(Number), Vacc, Number)) %>%
-    mutate(FixedVacc = cumsum(FixedVacc))
+    mutate(FixedVacc = my_cumsum(FixedVacc))
 
   out <- fixed_up %>% select(-Vacc) %>% rename(Vacc = FixedVacc) %>%
     ungroup()
