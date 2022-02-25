@@ -45,7 +45,8 @@ read_vacc_table <- function(tab, current_date) {
 }
 
 read_firstdose_table <- function(tab, current_date) {
-  final <- tab %>% select(DHB = 1, Dose1 = 'At least partially vacc', Population) %>%
+  final <- tab %>% select(DHB = 1, Dose1 = 'At least partially vacc',
+                          Dose2 = 'Fully vacc', Population) %>%
     mutate(across(-DHB, readr::parse_number)) %>%
     mutate(Date = current_date)
   final
