@@ -1,23 +1,23 @@
-DHB,Dose1,Population,Date
-Northland,169,582,2022-02-22
-Waitemata,2618,6497,2022-02-22
-Auckland,2911,7257,2022-02-22
-Counties Manukau,8245,20488,2022-02-22
-Waikato,787,1950,2022-02-22
-Lakes,142,405,2022-02-22
-Bay of Plenty,230,696,2022-02-22
-Tairawhiti,70,128,2022-02-22
-Taranaki,74,260,2022-02-22
-Hawkes Bay,328,994,2022-02-22
-MidCentral,334,932,2022-02-22
-Whanganui,71,277,2022-02-22
-Capital and Coast,1208,2822,2022-02-22
-Hutt Valley,699,1521,2022-02-22
-Wairarapa,60,141,2022-02-22
-Nelson Marlborough,228,477,2022-02-22
-West Coast,22,56,2022-02-22
-Canterbury,988,2442,2022-02-22
-South Canterbury,121,211,2022-02-22
-Southern,534,1171,2022-02-22
-Overseas / Unknown,10,91,2022-02-22
-Total,19849,49398,2022-02-22
+DHB,Dose1,Dose2,Population,Date
+Northland,169,<5,582,2022-02-22
+Waitemata,2618,26,6497,2022-02-22
+Auckland,2911,69,7257,2022-02-22
+Counties Manukau,8245,199,20488,2022-02-22
+Waikato,787,5,1950,2022-02-22
+Lakes,142,<5,405,2022-02-22
+Bay of Plenty,230,<5,696,2022-02-22
+Tairawhiti,70,<5,128,2022-02-22
+Taranaki,74,<5,260,2022-02-22
+Hawkes Bay,328,<5,994,2022-02-22
+MidCentral,334,<5,932,2022-02-22
+Whanganui,71,<5,277,2022-02-22
+Capital and Coast,1208,5,2822,2022-02-22
+Hutt Valley,699,<5,1521,2022-02-22
+Wairarapa,60,<5,141,2022-02-22
+Nelson Marlborough,228,<5,477,2022-02-22
+West Coast,22,<5,56,2022-02-22
+Canterbury,988,<5,2442,2022-02-22
+South Canterbury,121,<5,211,2022-02-22
+Southern,534,<5,1171,2022-02-22
+Overseas / Unknown,10,<5,91,2022-02-22
+Total,19849,318,49398,2022-02-22
