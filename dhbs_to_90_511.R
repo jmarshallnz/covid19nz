@@ -17,8 +17,8 @@ dailies <- dhb_files %>%
   arrange(desc(date)) %>%
 #  slice(1:2) %>%
   pull(files) %>%
-  map_dfr(read_csv) %>%
-  pivot_longer(Dose1,
+  map_dfr(read_csv, col_types = cols(Dose2 = col_double(), .default=col_guess())) %>%
+  pivot_longer(Dose1:Dose2,
                names_to="Dose",
                values_to = "Vacc",
                names_prefix="Dose",
